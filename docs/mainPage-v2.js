@@ -39,19 +39,21 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       const contexto = {
-        token_sessao: tokenSessao,
-        empresa_usuario: "Oriente Marketing",
-        perfil_usuario: "comercial",
-        estilo_vendedor: "emocional",
-        velocidade_desejada: "curta",
-        preferencia_output: "simulação",
-        segmento: "publicidade",
-        produto_interesse: "proposta de programete de rádio",
-        etapa_funil: "proposta",
-        objetivo_interacao: "converter",
-        canal_comunicacao: "WhatsApp",
-        subprompt_etapa: "subprompt_continuar_conversa"
-      };
+  token_sessao: tokenSessao,
+  empresa_usuario: "Oriente Marketing",
+  perfil_usuario: "comercial",
+  estilo_vendedor: "emocional",
+  velocidade_desejada: "curta",
+  preferencia_output: "simulação",
+  segmento: "publicidade",
+  produto_interesse: "proposta de programete de rádio",
+  etapa_funil: "proposta",
+  objetivo_interacao: "converter",
+  canal_comunicacao: "WhatsApp",
+  subprompt_etapa: "subprompt_continuar_conversa",
+  modelo_utilizado: "gpt-3.5"
+};
+
 
       console.log("📤 Enviando contexto:", contexto);
 
