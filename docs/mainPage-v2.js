@@ -1,4 +1,3 @@
-
 document.addEventListener("DOMContentLoaded", () => {
   const input = document.getElementById("inputMensagem");
   const botao = document.getElementById("botaoEnviar");
@@ -22,11 +21,49 @@ document.addEventListener("DOMContentLoaded", () => {
       if (resposta.ok && dados.tokenConfirmado) {
         tokenSessao = dados.token_sessao;
         console.log("🔐 Token obtido com sucesso.");
+
+        // Ativar contexto após token
+        await enviarContextoInicial();
       } else {
         console.error("❌ Erro ao obter token:", dados);
       }
     } catch (erro) {
       console.error("❌ Erro na requisição do token:", erro);
+    }
+  }
+
+  async function enviarContextoInicial() {
+    try {
+      const contexto = {
+        token_sessao: tokenSessao,
+        empresa_usuario: "Oriente Marketing",
+        perfil_usuario: "comercial",
+        estilo_vendedor: "emocional",
+        velocidade_desejada: "curta",
+        preferencia_output: "simulação",
+        segmento: "publicidade",
+        produto_interesse: "proposta de programete de rádio",
+        etapa_funil: "proposta",
+        objetivo_interacao: "converter",
+        canal_comunicacao: "WhatsApp"
+      };
+
+      const resposta = await fetch("https://sync.kognitiva.app/proxy/contexto", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${tokenSessao}`
+        },
+        body: JSON.stringify(contexto)
+      });
+
+      if (resposta.ok) {
+        console.log("📦 Contexto inicial enviado com sucesso.");
+      } else {
+        console.error("❌ Erro ao enviar contexto inicial.");
+      }
+    } catch (erro) {
+      console.error("❌ Erro no envio do contexto:", erro);
     }
   }
 
@@ -37,17 +74,25 @@ document.addEventListener("DOMContentLoaded", () => {
     adicionarMensagem("user", texto);
     input.value = "";
 
-    const respostaIA = await fetch("https://sync.kognitiva.app/executar", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        cliente_nome: "Cliente Teste",
-        objetivo_interacao: texto
-      })
-    });
+    try {
+      const respostaIA = await fetch("https://sync.kognitiva.app/executar", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${tokenSessao}`
+        },
+        body: JSON.stringify({
+          token_sessao: tokenSessao,
+          objetivo_interacao: texto
+        })
+      });
 
-    const dados = await respostaIA.json();
-    adicionarMensagem("ai", dados.resposta || "⚠ Erro na resposta.");
+      const dados = await respostaIA.json();
+      adicionarMensagem("ai", dados.resposta || "⚠ Erro na resposta.");
+    } catch (erro) {
+      adicionarMensagem("ai", "⚠ Erro ao comunicar com a IA.");
+      console.error("❌ Erro na execução da IA:", erro);
+    }
   }
 
   function adicionarMensagem(tipo, texto) {
@@ -63,6 +108,5 @@ document.addEventListener("DOMContentLoaded", () => {
     if (e.key === "Enter") enviarMensagem();
   });
 
-  obterToken(); // Inicializa token na carga da página
+  obterToken(); // Inicializa tudo na carga da página
 });
-
