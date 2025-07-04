@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -106,8 +107,8 @@
       <div class="message ai">Olá! Sou a IA da Kognitiva. Como posso te ajudar hoje?</div>
     </div>
     <div class="chat-input">
-      <input type="text" id="mensagemInput" placeholder="Digite sua mensagem..." />
-      <button onclick="enviarMensagem()">Enviar</button>
+      <input type="text" id="inputMensagem" placeholder="Digite sua mensagem..." />
+      <button id="botaoEnviar">Enviar</button>
     </div>
   </div>
 
@@ -123,29 +124,14 @@
       scrollToBottom();
     }
 
-    function enviarMensagem() {
-      const input = document.getElementById("mensagemInput");
-      const texto = input.value.trim();
-      if (!texto || !clienteSelecionado) return;
-
-      const msgUser = document.createElement("div");
-      msgUser.className = "message user";
-      msgUser.textContent = texto;
-      document.getElementById("chatMessages").appendChild(msgUser);
-
-      const msgIA = document.createElement("div");
-      msgIA.className = "message ai";
-      msgIA.textContent = `Entendi sua mensagem: "${texto}". Estamos processando...`;
-      document.getElementById("chatMessages").appendChild(msgIA);
-
-      input.value = "";
-      scrollToBottom();
-    }
-
     function scrollToBottom() {
       const chat = document.getElementById("chatMessages");
       chat.scrollTop = chat.scrollHeight;
     }
   </script>
+
+  <script src="mainPage.js"></script>
+  <script src="execControl.js"></script>
 </body>
 </html>
+
