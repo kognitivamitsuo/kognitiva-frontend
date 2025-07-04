@@ -1,5 +1,3 @@
-
-// mainPage-v2.js – versão atualizada sem chamada para /proxy/contexto
 import { executarIA } from "./executarIA.js";
 import { verificarReaproveitamentoSessao } from "./ReaproveitamentoSessao.js";
 import { renderizarMensagem } from "./uiRenderer.js";
@@ -22,7 +20,12 @@ async function obterToken() {
 
     const data = await resposta.json();
     tokenSessao = data.token_sessao;
-    console.log("✔ Token obtido com sucesso.");
+
+    if (tokenSessao) {
+      console.log("✔ Token obtido com sucesso:", tokenSessao);
+    } else {
+      console.warn("⚠ Token não recebido. Verifique o backend.");
+    }
   } catch (erro) {
     console.error("❌ Erro na requisição do token:", erro);
   }
@@ -40,11 +43,21 @@ function atualizarClientes(clientes) {
   });
 }
 
-function selecionarCliente(nome) {
+async function selecionarCliente(nome) {
   clienteSelecionado = nome;
   document.getElementById("chatMessages").innerHTML = "";
   renderizarMensagem("ai", `✅ Cliente selecionado: ${nome}`);
-  verificarReaproveitamentoSessao(tokenSessao, nome);
+
+  if (!tokenSessao) {
+    console.warn("⚠ Token de sessão não disponível. Tentando obter novamente...");
+    await obterToken();
+  }
+
+  if (tokenSessao) {
+    verificarReaproveitamentoSessao(tokenSessao, nome);
+  } else {
+    renderizarMensagem("ai", "⚠ Token de sessão indisponível. Não foi possível continuar.");
+  }
 }
 
 async function enviarMensagem() {
@@ -73,5 +86,3 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (e.key === "Enter") enviarMensagem();
   });
 });
-
-
