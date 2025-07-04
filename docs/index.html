@@ -358,49 +358,53 @@
 
                 try {
                     const respostaIA = await fetch("https://sync.kognitiva.app/executar", {
-					  method: "POST",
-					  headers: {
-						"Content-Type": "application/json",
-						Authorization: `Bearer ${tokenSessao}`,
-					  },
-					  body: JSON.stringify({
-						token_sessao: tokenSessao,
-						cliente_nome: clienteSelecionado,
-						objetivo_interacao: texto,
-						contexto_valido: true // ← correção crítica adicionada
-					  }),
-					});
-					</script>
-
-                    const dados = await respostaIA.json();
-                    
-                    // Remove loading message
-                    loadingMsg.remove();
-                    
-                    if (dados.erro) {
-                        adicionarMensagem("ai", `⚠ Erro: ${dados.erro}`);
-                        return;
-                    }
-                    
-                    adicionarMensagem("ai", dados.resposta || "⚠ Resposta da IA sem conteúdo.");
-
-                    if (dados.modelo_utilizado && dados.score_resposta != null) {
-                        const infoMsg = document.createElement("div");
-                        infoMsg.className = "message ai message-info";
-                        infoMsg.textContent = `🧠 Modelo: ${dados.modelo_utilizado} | Score: ${dados.score_resposta}`;
-                        chat.appendChild(infoMsg);
-                        chat.scrollTop = chat.scrollHeight;
-                    }
-                    
-                    // Se for a primeira mensagem, verificar reaproveitamento
-                    if (chat.querySelectorAll(".message").length <= 3) {
-                        await verificarReaproveitamentoSessao(tokenSessao, clienteSelecionado);
-                    }
-                } catch (erro) {
-                    loadingMsg.remove();
-                    adicionarMensagem("ai", "⚠ Erro ao comunicar com a IA. Por favor, tente novamente.");
-                    console.error("❌ Erro na execução da IA:", erro);
-                }
+						method: "POST",
+						headers: {
+						  "Content-Type": "application/json",
+						  Authorization: `Bearer ${tokenSessao}`,
+						},
+						body: JSON.stringify({
+						  token_sessao: tokenSessao,
+						  cliente_nome: clienteSelecionado,
+						  objetivo_interacao: texto,
+						  contexto_valido: true
+						}),
+					  });
+					
+					  const dados = await respostaIA.json();
+					
+					  // Remove mensagem de carregamento
+					  loadingMsg.remove();
+					
+					  if (dados.erro) {
+						adicionarMensagem("ai", `⚠ Erro: ${dados.erro}`);
+						return;
+					  }
+					
+					  // 🔒 Proteção aplicada: evitar renderização HTML acidental
+					  const respostaSegura = document.createElement("div");
+					  respostaSegura.className = "message ai";
+					  respostaSegura.textContent = dados.resposta || "⚠ Resposta da IA sem conteúdo.";
+					  chat.appendChild(respostaSegura);
+					  chat.scrollTop = chat.scrollHeight;
+					
+					  if (dados.modelo_utilizado && dados.score_resposta != null) {
+						const infoMsg = document.createElement("div");
+						infoMsg.className = "message ai message-info";
+						infoMsg.textContent = `🧠 Modelo: ${dados.modelo_utilizado} | Score: ${dados.score_resposta}`;
+						chat.appendChild(infoMsg);
+						chat.scrollTop = chat.scrollHeight;
+					  }
+					
+					  if (chat.querySelectorAll(".message").length <= 3) {
+						await verificarReaproveitamentoSessao(tokenSessao, clienteSelecionado);
+					  }
+					
+					} catch (erro) {
+					  loadingMsg.remove();
+					  adicionarMensagem("ai", "⚠ Erro ao comunicar com a IA. Por favor, tente novamente.");
+					  console.error("❌ Erro na execução da IA:", erro);
+					}
             }
 
             function renderizarClientes(nomes) {
@@ -484,4 +488,3 @@
     </script>
 </body>
 </html>
-
