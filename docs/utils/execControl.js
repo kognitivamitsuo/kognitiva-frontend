@@ -1,64 +1,43 @@
 
-// execControl.js – Integração Real com Envio via Enter e Botão
+// execControl.js – responsável por acionar a IA da Kognitiva com contexto real
 
-// Envia a mensagem para a IA
-async function enviarMensagem(textoUsuario) {
-    const token = localStorage.getItem("token_sessao") || "";
-    const payload = {
-        token_sessao: token,
-        pergunta_usuario: textoUsuario
+async function executarIA(textoUsuario, clienteSelecionado, tokenSessao) {
+  if (!clienteSelecionado || !tokenSessao || !textoUsuario) {
+    console.error("❌ Campos obrigatórios ausentes para executar IA.");
+    return {
+      resposta: "⚠️ Erro: campos obrigatórios ausentes.",
+      modelo_utilizado: "indefinido"
     };
+  }
 
-    try {
-        const res = await fetch("https://sync.kognitiva.app/executar", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
-        });
-        const data = await res.json();
-        if (data.resposta) {
-            exibirResposta(data.resposta);
-        } else {
-            exibirResposta("⚠️ Resposta inválida ou erro ao chamar a IA.");
-        }
-    } catch (err) {
-        exibirResposta("❌ Erro de rede ou servidor indisponível.");
-        console.error("Erro ao executar IA:", err);
+  try {
+    const resposta = await fetch("https://sync.kognitiva.app/executar", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        cliente_nome: clienteSelecionado,
+        objetivo_interacao: textoUsuario
+      })
+    });
+
+    if (!resposta.ok) {
+      throw new Error("❌ Erro na resposta da IA");
     }
+
+    const dados = await resposta.json();
+    return {
+      resposta: dados.resposta || "⚠️ Resposta vazia.",
+      modelo_utilizado: dados.modelo_utilizado || "desconhecido",
+      score_resposta: dados.score_resposta || 0
+    };
+  } catch (erro) {
+    console.error("❌ Erro ao executar IA:", erro);
+    return {
+      resposta: "⚠️ Houve uma falha temporária. Tente novamente.",
+      modelo_utilizado: "fallback"
+    };
+  }
 }
-
-// Exibe a resposta da IA na tela
-function exibirResposta(resposta) {
-    const container = document.querySelector(".chat-container");
-    const bubble = document.createElement("div");
-    bubble.className = "bubble-ia";
-    bubble.textContent = resposta;
-    container.appendChild(bubble);
-    container.scrollTop = container.scrollHeight;
-}
-
-// Ativa o envio por botão e tecla Enter
-document.addEventListener("DOMContentLoaded", () => {
-    const input = document.querySelector("#inputMensagem");
-    const botao = document.querySelector("#botaoEnviar");
-
-    if (!input || !botao) return;
-
-    input.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") {
-            e.preventDefault();
-            if (input.value.trim()) {
-                enviarMensagem(input.value.trim());
-                input.value = "";
-            }
-        }
-    });
-
-    botao.addEventListener("click", () => {
-        if (input.value.trim()) {
-            enviarMensagem(input.value.trim());
-            input.value = "";
-        }
-    });
-});
 
