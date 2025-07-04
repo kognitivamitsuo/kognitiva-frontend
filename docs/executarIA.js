@@ -1,30 +1,29 @@
+const URL_API = "https://sync.kognitiva.app";
 
-// executarIA.js – versão atualizada com envio de contexto_valido
-export async function executarIA(tokenSessao, clienteSelecionado, objetivoInteracao, contextoValido = true) {
+async function executarIA(tokenSessao, cliente_nome, mensagem, contexto_valido) {
   try {
-    const resposta = await fetch("https://sync.kognitiva.app/executar", {
+    const resposta = await fetch(`${URL_API}/executar`, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${tokenSessao}`,
+        "Authorization": `Bearer ${tokenSessao}`,
+        "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        cliente_nome: clienteSelecionado,
-        objetivo_interacao: objetivoInteracao,
-        token_sessao: tokenSessao,
-        contexto_valido: contextoValido,
-      }),
+        cliente_nome,
+        mensagem,
+        contexto_valido
+      })
     });
 
     if (!resposta.ok) {
-      const erroTexto = await resposta.text();
-      throw new Error(`Erro ${resposta.status}: ${erroTexto}`);
+      throw new Error(`Erro na execução: ${resposta.status}`);
     }
 
-    const dados = await resposta.json();
-    return dados.resposta || "⚠ A resposta da IA veio vazia.";
+    const resultado = await resposta.json();
+    return resultado.resposta;
   } catch (erro) {
-    console.error("Erro na execução da IA:", erro);
-    return "⚠ Erro ao executar a IA. Verifique sua conexão ou tente novamente.";
+    console.error("Erro ao executar IA:", erro);
+    return "⚠ Ocorreu um erro na execução da IA.";
   }
 }
+export { executarIA };
