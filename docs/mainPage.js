@@ -1,10 +1,8 @@
 // ✅ mainPage.js – Versão produção com modo real
-
-import { definirClienteAtivo, verificarEstadoInicial } from "./utils/execControl.js";
+import { definirClienteAtivo, verificarEstadoInicial } from "./execControl.js";
 
 let tokenJWT = null;
 
-// 🔐 Obter token da sessão
 async function obterTokenSessao() {
   const res = await fetch("https://sync.kognitiva.app/proxy/token", {
     method: "POST",
@@ -20,7 +18,6 @@ async function obterTokenSessao() {
   console.log("🔐 Token recebido:", tokenJWT);
 }
 
-// 📦 Submeter mensagem para a IA
 async function enviarMensagem() {
   const input = document.getElementById("inputMensagem").value;
   const cliente = document.getElementById("clienteAtivo").textContent;
@@ -46,14 +43,10 @@ async function enviarMensagem() {
   console.log("📩 Resposta recebida:", dados);
 }
 
-// 🔄 Inicialização
 window.onload = async () => {
   verificarEstadoInicial();
   await obterTokenSessao();
-
-  // Ativar cliente padrão para testes
   definirClienteAtivo("Oriente Marketing");
-
-  // Bind do botão
   document.getElementById("btnEnviarMensagem").onclick = enviarMensagem;
 };
+
