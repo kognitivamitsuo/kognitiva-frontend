@@ -1,10 +1,19 @@
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   const input = document.getElementById("inputMensagem");
   const botao = document.getElementById("botaoEnviar");
   const chat = document.getElementById("chatMessages");
+  const clientList = document.getElementById("clientList");
 
   let tokenSessao = null;
   let clienteSelecionado = null;
+
+  function adicionarMensagem(tipo, texto) {
+    const msg = document.createElement("div");
+    msg.className = "message " + tipo;
+    msg.textContent = texto;
+    chat.appendChild(msg);
+    chat.scrollTop = chat.scrollHeight;
+  }
 
   async function obterToken() {
     try {
@@ -17,60 +26,29 @@ document.addEventListener("DOMContentLoaded", () => {
           user_agent: navigator.userAgent,
         }),
       });
-
       const dados = await resposta.json();
       if (resposta.ok && dados.tokenConfirmado) {
         tokenSessao = dados.token_sessao;
         console.log("🔐 Token obtido com sucesso.");
       } else {
         console.error("❌ Erro ao obter token:", dados);
+        alert("Erro ao obter token de sessão.");
       }
     } catch (erro) {
       console.error("❌ Erro na requisição do token:", erro);
-    }
-  }
-
-  async function enviarContextoCompleto(mensagem) {
-    if (!tokenSessao || !clienteSelecionado) return;
-
-    const contexto = {
-      cliente_nome: clienteSelecionado,
-      produto_interesse: "Plataforma SaaS IA",
-      etapa_funil: "Negociação",
-      objetivo_interacao: mensagem,
-      canal_comunicacao: "Email",
-      segmento: "Tecnologia",
-      estilo_vendedor: "Consultivo",
-      preferencia_output: "Explicativo",
-      velocidade_desejada: "Normal",
-      contexto_valido: true,
-    };
-
-    try {
-      const resp = await fetch("https://sync.kognitiva.app/proxy/contexto", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token_sessao: tokenSessao, contexto }),
-      });
-
-      if (!resp.ok) {
-        console.error("❌ Falha ao enviar contexto completo.");
-      } else {
-        console.log("✅ Contexto completo enviado.");
-      }
-    } catch (err) {
-      console.error("❌ Erro ao enviar contexto:", err);
+      alert("Erro de conexão ao obter token.");
     }
   }
 
   async function enviarMensagem() {
     const texto = input.value.trim();
-    if (!texto || !tokenSessao || !clienteSelecionado) return;
+    if (!texto) return;
+    if (!clienteSelecionado) return alert("⚠ Selecione um cliente na lista.");
+    if (!tokenSessao) return alert("⚠ Token de sessão não disponível.");
 
     adicionarMensagem("user", texto);
     input.value = "";
-
-    await enviarContextoCompleto(texto);
+    adicionarMensagem("ai", "⌛ Processando resposta...");
 
     try {
       const respostaIA = await fetch("https://sync.kognitiva.app/executar", {
@@ -87,13 +65,12 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       const dados = await respostaIA.json();
+      const loadingMsg = [...chat.children].find(div => div.textContent.includes("⌛"));
+      if (loadingMsg) loadingMsg.remove();
+      adicionarMensagem("ai", dados.resposta || "⚠ Erro na resposta da IA.");
 
-      adicionarMensagem("ai", dados.resposta || "⚠ Erro na resposta.");
       if (dados.modelo_utilizado && dados.score_resposta != null) {
-        adicionarMensagem(
-          "ai",
-          `🧠 Modelo: ${dados.modelo_utilizado} | Score: ${dados.score_resposta}`
-        );
+        adicionarMensagem("ai", `🧠 Modelo: ${dados.modelo_utilizado} | Score: ${dados.score_resposta}`);
       }
     } catch (erro) {
       adicionarMensagem("ai", "⚠ Erro ao comunicar com a IA.");
@@ -101,40 +78,50 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  function adicionarMensagem(tipo, texto) {
-    const msg = document.createElement("div");
-    msg.className = "message " + tipo;
-    msg.textContent = texto;
-    chat.appendChild(msg);
-    chat.scrollTop = chat.scrollHeight;
+  function renderizarClientes(nomes) {
+    clientList.innerHTML = "";
+    if (!nomes.length) {
+      const li = document.createElement("li");
+      li.textContent = "Nenhum cliente encontrado.";
+      li.style.color = "#999";
+      clientList.appendChild(li);
+      return;
+    }
+    nomes.sort((a, b) => a.localeCompare(b));
+    nomes.forEach(nome => {
+      const li = document.createElement("li");
+      li.textContent = nome;
+      li.onclick = () => selecionarCliente(nome);
+      clientList.appendChild(li);
+    });
   }
 
   function selecionarCliente(nome) {
     clienteSelecionado = nome;
     localStorage.setItem("clienteSelecionado", nome);
-    const msg = document.createElement("div");
-    msg.className = "message ai";
-    msg.textContent = `✅ Cliente selecionado: ${nome}`;
-    chat.appendChild(msg);
-    chat.scrollTop = chat.scrollHeight;
+    adicionarMensagem("ai", `✅ Cliente selecionado: ${nome}`);
   }
 
-  // Recupera cliente salvo ao carregar a página
-  document.addEventListener("DOMContentLoaded", () => {
-    const clienteSalvo = localStorage.getItem("clienteSelecionado");
-    if (clienteSalvo) {
-      selecionarCliente(clienteSalvo);
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      enviarMensagem();
     }
   });
 
   botao.addEventListener("click", enviarMensagem);
-  input.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") enviarMensagem();
-  });
 
-  obterToken();
+  const placeholder = document.createElement("li");
+  placeholder.textContent = "Carregando clientes...";
+  placeholder.style.color = "#888";
+  clientList.appendChild(placeholder);
 
-  // Exportar função selecionarCliente para uso global, caso necessário
-  window.selecionarCliente = selecionarCliente;
+  await obterToken();
+  const nomesClientes = ["Oriente Marketing", "Nova Era Logística", "Grupo SCC"];
+  renderizarClientes(nomesClientes);
+
+  const salvo = localStorage.getItem("clienteSelecionado");
+  if (salvo && nomesClientes.includes(salvo)) selecionarCliente(salvo);
 });
+
 
