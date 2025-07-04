@@ -22,43 +22,11 @@ document.addEventListener("DOMContentLoaded", () => {
       if (resposta.ok && dados.tokenConfirmado) {
         tokenSessao = dados.token_sessao;
         console.log("🔐 Token obtido com sucesso.");
-        await enviarContexto();
       } else {
         console.error("❌ Erro ao obter token:", dados);
       }
     } catch (erro) {
       console.error("❌ Erro na requisição do token:", erro);
-    }
-  }
-
-  async function enviarContexto() {
-    try {
-      if (!tokenSessao) return;
-
-      const contexto = {
-        token_sessao: tokenSessao,
-        empresa_usuario: "Oriente Marketing",
-        perfil_usuario: "comercial",
-        objetivo_interacao: "teste"
-      };
-
-      const resposta = await fetch("https://sync.kognitiva.app/proxy/contexto", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${tokenSessao}`
-        },
-        body: JSON.stringify(contexto)
-      });
-
-      if (resposta.ok) {
-        console.log("📦 Contexto mínimo enviado com sucesso.");
-      } else {
-        const erro = await resposta.text();
-        console.error("❌ Erro ao enviar contexto:", erro);
-      }
-    } catch (erro) {
-      console.error("❌ Erro no envio do contexto:", erro);
     }
   }
 
@@ -70,7 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
     input.value = "";
 
     try {
-      const resposta = await fetch("https://sync.kognitiva.app/executar", {
+      const respostaIA = await fetch("https://sync.kognitiva.app/executar", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -82,7 +50,7 @@ document.addEventListener("DOMContentLoaded", () => {
         })
       });
 
-      const dados = await resposta.json();
+      const dados = await respostaIA.json();
       adicionarMensagem("ai", dados.resposta || "⚠ Erro na resposta.");
     } catch (erro) {
       adicionarMensagem("ai", "⚠ Erro ao comunicar com a IA.");
@@ -105,3 +73,4 @@ document.addEventListener("DOMContentLoaded", () => {
 
   obterToken();
 });
+
