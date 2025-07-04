@@ -1,11 +1,9 @@
-// uiRenderer.js – Renderização de mensagens e status
-
 export function renderizarMensagem(tipo, texto) {
-  const container = document.getElementById("mensagensContainer");
+  const container = document.getElementById("chatMessages");
   if (!container || !texto) return;
 
   const div = document.createElement("div");
-  div.className = `mensagem ${tipo}`;
+  div.className = tipo === "user" ? "message user" : "message ai";
   div.textContent = texto;
   container.appendChild(div);
   container.scrollTop = container.scrollHeight;
