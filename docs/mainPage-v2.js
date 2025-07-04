@@ -1,4 +1,5 @@
 
+
 document.addEventListener("DOMContentLoaded", () => {
   const input = document.getElementById("inputMensagem");
   const botao = document.getElementById("botaoEnviar");
@@ -22,7 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (resposta.ok && dados.tokenConfirmado) {
         tokenSessao = dados.token_sessao;
         console.log("🔐 Token obtido com sucesso.");
-        await enviarContextoInicial();
+        await enviarContexto();
       } else {
         console.error("❌ Erro ao obter token:", dados);
       }
@@ -31,30 +32,23 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  async function enviarContextoInicial() {
+  async function enviarContexto() {
     try {
-      if (!tokenSessao) {
-        console.error("❌ token_sessao indefinido.");
-        return;
-      }
+      if (!tokenSessao) return;
 
       const contexto = {
         token_sessao: tokenSessao,
         empresa_usuario: "Oriente Marketing",
         perfil_usuario: "comercial",
-        estilo_vendedor: "emocional",
-        velocidade_desejada: "curta",
-        preferencia_output: "simulação",
-        segmento: "publicidade",
         produto_interesse: "proposta de programete de rádio",
         etapa_funil: "proposta",
         objetivo_interacao: "converter",
         canal_comunicacao: "WhatsApp",
         subprompt_etapa: "subprompt_continuar_conversa",
-        modelo_utilizado: "gpt-3.5"
+        modelo_utilizado: "gpt-3.5",
+        framework_version: "v3.4-finalUX",
+        origem_chamada: "frontend"
       };
-
-      console.log("📤 Enviando contexto:", contexto);
 
       const resposta = await fetch("https://sync.kognitiva.app/proxy/contexto", {
         method: "POST",
@@ -66,14 +60,13 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       if (resposta.ok) {
-        console.log("📦 Contexto inicial enviado com sucesso.");
+        console.log("📦 Contexto limpo enviado com sucesso.");
       } else {
-        const status = resposta.status;
-        const erroBackend = await resposta.text();
-        console.error(`❌ Erro ao enviar contexto (status ${status}):`, erroBackend);
+        const erro = await resposta.text();
+        console.error("❌ Erro ao enviar contexto:", erro);
       }
     } catch (erro) {
-      console.error("❌ Erro no envio do contexto:", erro);
+      console.error("❌ Erro ao enviar contexto:", erro);
     }
   }
 
@@ -85,7 +78,7 @@ document.addEventListener("DOMContentLoaded", () => {
     input.value = "";
 
     try {
-      const respostaIA = await fetch("https://sync.kognitiva.app/executar", {
+      const resposta = await fetch("https://sync.kognitiva.app/executar", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -97,7 +90,7 @@ document.addEventListener("DOMContentLoaded", () => {
         })
       });
 
-      const dados = await respostaIA.json();
+      const dados = await resposta.json();
       adicionarMensagem("ai", dados.resposta || "⚠ Erro na resposta.");
     } catch (erro) {
       adicionarMensagem("ai", "⚠ Erro ao comunicar com a IA.");
