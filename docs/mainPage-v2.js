@@ -1,5 +1,5 @@
-// mainPage-v2.js – versão atualizada sem chamada para /proxy/contexto
 
+// mainPage-v2.js – versão atualizada sem chamada para /proxy/contexto
 import { executarIA } from "./executarIA.js";
 import { verificarReaproveitamentoSessao } from "./ReaproveitamentoSessao.js";
 import { renderizarMensagem } from "./uiRenderer.js";
