@@ -68,8 +68,9 @@ document.addEventListener("DOMContentLoaded", () => {
       if (resposta.ok) {
         console.log("📦 Contexto inicial enviado com sucesso.");
       } else {
+        const status = resposta.status;
         const erroBackend = await resposta.text();
-        console.error("❌ Erro ao enviar contexto:", erroBackend);
+        console.error(`❌ Erro ao enviar contexto (status ${status}):`, erroBackend);
       }
     } catch (erro) {
       console.error("❌ Erro no envio do contexto:", erro);
@@ -119,3 +120,4 @@ document.addEventListener("DOMContentLoaded", () => {
 
   obterToken(); // Inicializa tudo na carga da página
 });
+
