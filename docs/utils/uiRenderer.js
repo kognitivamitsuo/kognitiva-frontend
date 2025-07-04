@@ -1,14 +1,12 @@
-/ execControl.js – Controle de concorrência e timeout
+// uiRenderer.js – Renderização de mensagens e status
 
-const execLocks = new Set();
+export function renderizarMensagem(tipo, texto) {
+  const container = document.getElementById("mensagensContainer");
+  if (!container || !texto) return;
 
-export function lockExecucao(key) {
-  if (execLocks.has(key)) return false;
-  execLocks.add(key);
-  setTimeout(() => execLocks.delete(key), 4000);
-  return true;
-}
-
-export function timeoutExecucao(controller, ms = 4000) {
-  return setTimeout(() => controller.abort(), ms);
+  const div = document.createElement("div");
+  div.className = `mensagem ${tipo}`;
+  div.textContent = texto;
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
 }
