@@ -1,5 +1,4 @@
 
-
 document.addEventListener("DOMContentLoaded", () => {
   const input = document.getElementById("inputMensagem");
   const botao = document.getElementById("botaoEnviar");
@@ -40,14 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
         token_sessao: tokenSessao,
         empresa_usuario: "Oriente Marketing",
         perfil_usuario: "comercial",
-        produto_interesse: "proposta de programete de rádio",
-        etapa_funil: "proposta",
-        objetivo_interacao: "converter",
-        canal_comunicacao: "WhatsApp",
-        subprompt_etapa: "subprompt_continuar_conversa",
-        modelo_utilizado: "gpt-3.5",
-        framework_version: "v3.4-finalUX",
-        origem_chamada: "frontend"
+        objetivo_interacao: "teste"
       };
 
       const resposta = await fetch("https://sync.kognitiva.app/proxy/contexto", {
@@ -60,13 +52,13 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       if (resposta.ok) {
-        console.log("📦 Contexto limpo enviado com sucesso.");
+        console.log("📦 Contexto mínimo enviado com sucesso.");
       } else {
         const erro = await resposta.text();
         console.error("❌ Erro ao enviar contexto:", erro);
       }
     } catch (erro) {
-      console.error("❌ Erro ao enviar contexto:", erro);
+      console.error("❌ Erro no envio do contexto:", erro);
     }
   }
 
@@ -113,5 +105,3 @@ document.addEventListener("DOMContentLoaded", () => {
 
   obterToken();
 });
-
-
