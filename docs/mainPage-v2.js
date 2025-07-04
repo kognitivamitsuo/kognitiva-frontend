@@ -22,8 +22,6 @@ document.addEventListener("DOMContentLoaded", () => {
       if (resposta.ok && dados.tokenConfirmado) {
         tokenSessao = dados.token_sessao;
         console.log("🔐 Token obtido com sucesso.");
-
-        // Ativar contexto após token
         await enviarContextoInicial();
       } else {
         console.error("❌ Erro ao obter token:", dados);
@@ -51,7 +49,8 @@ document.addEventListener("DOMContentLoaded", () => {
         produto_interesse: "proposta de programete de rádio",
         etapa_funil: "proposta",
         objetivo_interacao: "converter",
-        canal_comunicacao: "WhatsApp"
+        canal_comunicacao: "WhatsApp",
+        subprompt_etapa: "subprompt_continuar_conversa"
       };
 
       console.log("📤 Enviando contexto:", contexto);
@@ -118,6 +117,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (e.key === "Enter") enviarMensagem();
   });
 
-  obterToken(); // Inicializa tudo na carga da página
+  obterToken();
 });
 
