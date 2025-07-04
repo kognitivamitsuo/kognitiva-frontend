@@ -1,14 +1,41 @@
-/ execControl.js – Controle de concorrência e timeout
+// ✅ execControl.js – Corrigido
 
-const execLocks = new Set();
+// Controle de concorrência e execução
+const estadoExecucao = {
+  clienteAtivo: false,
+  modoSimulacao: false, // Modo real agora
+  tokenSessao: null,
+  execucaoBloqueada: false
+};
 
-export function lockExecucao(key) {
-  if (execLocks.has(key)) return false;
-  execLocks.add(key);
-  setTimeout(() => execLocks.delete(key), 4000);
-  return true;
+export function bloquearExecucao() {
+  estadoExecucao.execucaoBloqueada = true;
+  document.getElementById("execucaoBloqueada").style.display = "block";
 }
 
-export function timeoutExecucao(controller, ms = 4000) {
-  return setTimeout(() => controller.abort(), ms);
+export function liberarExecucao() {
+  estadoExecucao.execucaoBloqueada = false;
+  document.getElementById("execucaoBloqueada").style.display = "none";
+}
+
+export function definirClienteAtivo(nome) {
+  estadoExecucao.clienteAtivo = !!nome;
+  estadoExecucao.tokenSessao = gerarTokenAleatorio();
+  document.getElementById("clienteAtivo").textContent = nome;
+}
+
+function gerarTokenAleatorio() {
+  return 'sessao_' + Math.random().toString(36).substr(2, 10);
+}
+
+export function obterEstadoAtual() {
+  return estadoExecucao;
+}
+
+// Verificação de fallback e simulação
+export function verificarEstadoInicial() {
+  if (estadoExecucao.modoSimulacao) {
+    bloquearExecucao();
+    document.getElementById("modoSimulacaoAviso").style.display = "block";
+  }
 }
