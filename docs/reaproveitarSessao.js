@@ -1,21 +1,30 @@
-export async function verificarReaproveitamentoSessao(tokenSessao, clienteSelecionado) {
+const URL_API = "https://sync.kognitiva.app";
+
+async function verificarReaproveitamentoSessao(tokenSessao, cliente_nome) {
   try {
-    const response = await fetch(`https://sync.kognitiva.app/proxy/cache_superprompt?cliente_nome=${encodeURIComponent(clienteSelecionado)}`, {
+    const resposta = await fetch(`${URL_API}/proxy/cache_superprompt?cliente_nome=${encodeURIComponent(cliente_nome)}`, {
       method: "GET",
       headers: {
-        Authorization: `Bearer ${tokenSessao}`,
-      },
+        "Authorization": `Bearer ${tokenSessao}`,
+        "Content-Type": "application/json"
+      }
     });
 
-    const data = await response.json();
-    if (data.superpromptOK) {
-      const aviso = document.getElementById("contextoReutilizadoAviso");
-      if (aviso) {
-        aviso.style.display = "block";
-        aviso.innerText = "ℹ️ Sessão reutilizando contexto salvo.";
+    if (resposta.ok) {
+      const dados = await resposta.json();
+      if (dados && dados.superprompt) {
+        console.log("ðŸ’¡ Reaproveitando contexto anterior com", cliente_nome);
+        const chat = document.getElementById("chatMessages");
+        const alerta = document.createElement("div");
+        alerta.className = "chat-message ai";
+        alerta.innerText = `ðŸ’¡ Reaproveitando contexto anterior com ${cliente_nome}`;
+        chat.appendChild(alerta);
       }
+    } else {
+      console.warn("âš  Contexto anterior nÃ£o encontrado.");
     }
-  } catch (err) {
-    console.error("Erro ao verificar reaproveitamento:", err);
+  } catch (erro) {
+    console.error("Erro ao verificar contexto anterior:", erro);
   }
 }
+export { verificarReaproveitamentoSessao };
