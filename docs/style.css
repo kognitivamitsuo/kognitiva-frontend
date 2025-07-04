@@ -1,0 +1,39 @@
+
+/* Kognitiva Frontend - style.css */
+body {
+    background-color: #343541;
+    font-family: "Segoe UI", sans-serif;
+    color: #f3f4f6;
+    margin: 0;
+    padding: 0;
+}
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+}
+.bubble-ia {
+    background-color: #f3f4f6;
+    color: #000;
+    border-radius: 16px;
+    padding: 12px;
+    margin: 8px 0;
+    align-self: flex-start;
+}
+.bubble-user {
+    background-color: #3b82f6;
+    color: #fff;
+    border-radius: 16px;
+    padding: 12px;
+    margin: 8px 0;
+    align-self: flex-end;
+}
+.sidebar {
+    width: 240px;
+    background-color: #202123;
+    color: white;
+    padding: 16px;
+    height: 100vh;
+    overflow-y: auto;
+    position: fixed;
+}
