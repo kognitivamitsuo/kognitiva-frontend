@@ -1,44 +1,54 @@
-// execControl.js – responsável por acionar a IA da Kognitiva com contexto real
+const URL_API = "https://sync.kognitiva.app";
 
-async function executarIA(textoUsuario, clienteSelecionado, tokenSessao) {
-  if (!clienteSelecionado || !tokenSessao || !textoUsuario) {
-    console.error("❌ Campos obrigatórios ausentes para executar IA.");
-    return {
-      resposta: "⚠️ Erro: campos obrigatórios ausentes.",
-      modelo_utilizado: "indefinido",
-    };
-  }
-
+async function buscarCacheSuperprompt(cliente_nome, tokenSessao) {
   try {
-    const resposta = await fetch("https://sync.kognitiva.app/executar", {
-      method: "POST",
+    const resposta = await fetch(`${URL_API}/proxy/cache_superprompt?cliente_nome=${encodeURIComponent(cliente_nome)}`, {
+      method: 'GET',
       headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${tokenSessao}`,
-      },
-      body: JSON.stringify({
-        cliente_nome: clienteSelecionado,
-        objetivo_interacao: textoUsuario,
-        token_sessao: tokenSessao,
-      }),
+        'Authorization': `Bearer ${tokenSessao}`,
+        'Content-Type': 'application/json'
+      }
     });
 
     if (!resposta.ok) {
-      throw new Error("❌ Erro na resposta da IA");
+      console.warn(`⚠️ Cache não encontrado ou não autorizado: ${resposta.status}`);
+      return null;
     }
 
-    const dados = await resposta.json();
-    return {
-      resposta: dados.resposta || "⚠️ Resposta vazia.",
-      modelo_utilizado: dados.modelo_utilizado || "desconhecido",
-      score_resposta: dados.score_resposta || 0,
-    };
+    const resultado = await resposta.json();
+    return resultado.superprompt || null;
   } catch (erro) {
-    console.error("❌ Erro ao executar IA:", erro);
-    return {
-      resposta: "⚠️ Houve uma falha temporária. Tente novamente.",
-      modelo_utilizado: "fallback",
-    };
+    console.error('Erro ao buscar cache do superprompt:', erro);
+    return null;
   }
 }
+
+async function executarIA(cliente_nome, mensagem, tokenSessao) {
+  try {
+    const resposta = await fetch(`${URL_API}/executar`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${tokenSessao}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        cliente_nome,
+        mensagem
+      })
+    });
+
+    if (!resposta.ok) {
+      throw new Error(`Erro ao executar IA: ${resposta.status}`);
+    }
+
+    const resultado = await resposta.json();
+    return resultado;
+  } catch (erro) {
+    console.error('Erro na execução da IA:', erro);
+    return { resposta: '⚠️ Ocorreu um erro ao executar a IA.', status: 'erro' };
+  }
+}
+
+export { buscarCacheSuperprompt, executarIA };
+
 
