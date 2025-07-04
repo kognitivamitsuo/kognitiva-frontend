@@ -1,5 +1,5 @@
-// executarIA.js – versão atualizada com envio de contexto_valido
 
+// executarIA.js – versão atualizada com envio de contexto_valido
 export async function executarIA(tokenSessao, clienteSelecionado, objetivoInteracao, contextoValido = true) {
   try {
     const resposta = await fetch("https://sync.kognitiva.app/executar", {
