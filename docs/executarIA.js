@@ -1,39 +1,30 @@
-// ✅ executarIA.js – Execução real com tratamento de fallback
+// executarIA.js – versão atualizada com envio de contexto_valido
 
-export async function executarIA(tokenJWT, mensagem, cliente) {
-  if (!mensagem || !cliente || !tokenJWT) {
-    return { status: "erro", resposta: "Dados incompletos para execução." };
-  }
-
-  const payload = {
-    token_sessao: tokenJWT,
-    mensagem_usuario: mensagem,
-    cliente_nome: cliente
-  };
-
+export async function executarIA(tokenSessao, clienteSelecionado, objetivoInteracao, contextoValido = true) {
   try {
     const resposta = await fetch("https://sync.kognitiva.app/executar", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${tokenJWT}`
+        Authorization: `Bearer ${tokenSessao}`,
       },
-      body: JSON.stringify(payload)
+      body: JSON.stringify({
+        cliente_nome: clienteSelecionado,
+        objetivo_interacao: objetivoInteracao,
+        token_sessao: tokenSessao,
+        contexto_valido: contextoValido,
+      }),
     });
 
+    if (!resposta.ok) {
+      const erroTexto = await resposta.text();
+      throw new Error(`Erro ${resposta.status}: ${erroTexto}`);
+    }
+
     const dados = await resposta.json();
-    return {
-      status: "ok",
-      resposta: dados.resposta,
-      modelo: dados.modelo_utilizado,
-      score: dados.score_resposta || null
-    };
+    return dados.resposta || "⚠ A resposta da IA veio vazia.";
   } catch (erro) {
-    console.error("⚠️ Erro ao executar IA:", erro);
-    return {
-      status: "fallback",
-      resposta: "⚠ Esta é uma resposta de fallback. O sistema está operando de forma simulada.",
-      modelo: "GPT-4 (fallback)"
-    };
+    console.error("Erro na execução da IA:", erro);
+    return "⚠ Erro ao executar a IA. Verifique sua conexão ou tente novamente.";
   }
 }
