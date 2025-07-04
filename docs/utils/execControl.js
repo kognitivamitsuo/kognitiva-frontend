@@ -1,9 +1,8 @@
 // ✅ execControl.js – Corrigido
 
-// Controle de concorrência e execução
 const estadoExecucao = {
   clienteAtivo: false,
-  modoSimulacao: false, // Modo real agora
+  modoSimulacao: false,
   tokenSessao: null,
   execucaoBloqueada: false
 };
@@ -32,10 +31,10 @@ export function obterEstadoAtual() {
   return estadoExecucao;
 }
 
-// Verificação de fallback e simulação
 export function verificarEstadoInicial() {
   if (estadoExecucao.modoSimulacao) {
     bloquearExecucao();
     document.getElementById("modoSimulacaoAviso").style.display = "block";
   }
 }
+
