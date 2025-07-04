@@ -1,10 +1,9 @@
-export function renderizarMensagem(tipo, texto) {
-  const container = document.getElementById("chatMessages");
-  if (!container || !texto) return;
-
-  const div = document.createElement("div");
-  div.className = tipo === "user" ? "message user" : "message ai";
-  div.textContent = texto;
-  container.appendChild(div);
-  container.scrollTop = container.scrollHeight;
+function renderizarMensagem(origem, mensagem) {
+  const chat = document.getElementById("chatMessages");
+  const msg = document.createElement("div");
+  msg.className = origem === "user" ? "chat-message user" : "chat-message ai";
+  msg.innerText = mensagem;
+  chat.appendChild(msg);
+  chat.scrollTop = chat.scrollHeight;
 }
+export { renderizarMensagem };
