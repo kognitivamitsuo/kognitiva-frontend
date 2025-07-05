@@ -1,340 +1,114 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Kognitiva Chat Dinâmico Integrado</title>
-<style>
-  body {
-    margin: 0; background-color: #343541; color: #f3f4f6;
-    font-family: 'Segoe UI', sans-serif;
-    display: flex; height: 100vh; overflow: hidden;
-  }
-  .sidebar {
-    width: 240px;
-    background-color: #202123;
-    padding: 1rem;
-    overflow-y: auto;
-    border-right: 1px solid #555;
-    box-sizing: border-box;
-  }
-  .sidebar h2 {
-    margin-top: 0;
-    margin-bottom: 1rem;
-    font-size: 1.2rem;
-    font-weight: 700;
-  }
-  .client-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-  .client-list li {
-    padding: 0.5rem 0.75rem;
-    cursor: pointer;
-    border-radius: 8px;
-    user-select: none;
-    transition: background-color 0.2s;
-  }
-  .client-list li:hover, .client-list li.active {
-    background-color: #3b82f6;
-    color: white;
-  }
-  .chat-container {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    background-color: #2a2c38;
-  }
-  .chat-messages {
-    flex: 1;
-    padding: 1rem;
-    overflow-y: auto;
-    scroll-behavior: smooth;
-  }
-  .message {
-    max-width: 75%;
-    margin-bottom: 10px;
-    padding: 12px 16px;
-    border-radius: 18px;
-    line-height: 1.4;
-    word-wrap: break-word;
-    font-size: 15px;
-  }
-  .message.ai {
-    background-color: #f3f4f6;
-    color: #111827;
-    align-self: flex-start;
-    border-bottom-left-radius: 4px;
-  }
-  .message.user {
-    background-color: #3b82f6;
-    color: white;
-    align-self: flex-end;
-    border-bottom-right-radius: 4px;
-    display: flex;
-    align-items: center;
-  }
-  .chat-input-wrapper {
-    display: flex;
-    padding: 10px 15px;
-    border-top: 1px solid #555;
-    background-color: #343541;
-  }
-  .chat-input {
-    flex: 1;
-    padding: 12px 16px;
-    font-size: 15px;
-    border-radius: 20px;
-    border: none;
-    background-color: #1f2937;
-    color: white;
-    outline: none;
-  }
-  .send-btn {
-    margin-left: 8px;
-    background-color: #2563eb;
-    border: none;
-    border-radius: 12px;
-    padding: 6px 12px;
-    color: white;
-    cursor: pointer;
-    font-weight: 600;
-    user-select: none;
-  }
-  .send-btn:hover {
-    background-color: #1e40af;
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kognitiva Chat</title>
+  <style>
+    body {
+      margin: 0;
+      background-color: #343541;
+      font-family: 'Segoe UI', sans-serif;
+      color: #f3f4f6;
+    }
+    #container {
+      display: flex;
+      height: 100vh;
+    }
+    #sidebar {
+      width: 260px;
+      background-color: #202123;
+      overflow-y: auto;
+      border-right: 1px solid #444;
+      padding: 10px;
+    }
+    #chat {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    #chatMessages {
+      flex-grow: 1;
+      padding: 20px;
+      overflow-y: auto;
+    }
+    .mensagem {
+      max-width: 80%;
+      margin-bottom: 10px;
+      padding: 12px;
+      border-radius: 12px;
+    }
+    .usuario {
+      align-self: flex-end;
+      background-color: #3b82f6;
+      color: white;
+    }
+    .ia {
+      align-self: flex-start;
+      background-color: #f3f4f6;
+      color: black;
+    }
+    .sistema {
+      align-self: center;
+      background-color: #facc15;
+      color: black;
+      font-weight: bold;
+    }
+    #inputContainer {
+      display: flex;
+      border-top: 1px solid #444;
+      padding: 10px;
+      background-color: #202123;
+    }
+    #inputMensagem {
+      flex-grow: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+    #botaoEnviar {
+      margin-left: 10px;
+      padding: 10px 16px;
+      background-color: #10b981;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .clienteItem {
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 6px;
+      background-color: #2d2f31;
+      margin-bottom: 5px;
+    }
+    .clienteItem:hover {
+      background-color: #3a3c3f;
+    }
+  </style>
 </head>
 <body>
-<div class="sidebar">
-  <h2>Clientes</h2>
-  <ul class="client-list" id="clientList"></ul>
-</div>
-<div class="chat-container">
-  <div class="chat-messages" id="chatMessages">
-    <div class="message ai">Olá! Sou a IA da Kognitiva. Como posso te ajudar hoje?</div>
+  <div id="container">
+    <div id="sidebar">
+      <h3>Clientes</h3>
+      <div id="listaClientes"></div>
+    </div>
+    <div id="chat">
+      <div id="chatMessages"></div>
+      <div id="inputContainer">
+        <input type="text" id="inputMensagem" placeholder="Digite sua mensagem..." autocomplete="off"/>
+        <button id="botaoEnviar">Enviar</button>
+      </div>
+    </div>
   </div>
-  <div class="chat-input-wrapper">
-    <input type="text" id="inputMensagem" placeholder="Digite sua mensagem..." autocomplete="off" />
-    <button class="send-btn" id="botaoEnviar">Enviar</button>
-  </div>
-</div>
-<script>
-(() => {
-  const clientList = document.getElementById('clientList');
-  const chatMessages = document.getElementById('chatMessages');
-  const inputMensagem = document.getElementById('inputMensagem');
-  const botaoEnviar = document.getElementById('botaoEnviar');
-  let clientes = [];
-  let clienteSelecionado = null;
-  let tokenSessao = null;
-  function adicionarMensagem(tipo, texto) {
-    const msg = document.createElement('div');
-    msg.className = `message ${tipo}`;
-    msg.textContent = texto;
-    chatMessages.appendChild(msg);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-  }
-  async function enviarFeedback(tipo) {
-    if (!tokenSessao || !clienteSelecionado) return;
-    let feedbackUsuario = tipo === 'positivo' ? 'positivo' : '';
-    let score = tipo === 'positivo' ? 10 : 4;
-    if (tipo === 'negativo') {
-      feedbackUsuario = prompt('Por favor, descreva o que podemos melhorar:');
-      if (!feedbackUsuario) {
-        adicionarMensagem('ai', 'Feedback negativo cancelado.');
-        return;
-      }
-    }
-    try {
-      await fetch('https://sync.kognitiva.app/proxy/feedback', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          cliente_nome: clienteSelecionado,
-          feedback_usuario: feedbackUsuario,
-          score_resposta: score,
-        }),
-      });
-      adicionarMensagem('ai', tipo === 'positivo' ? '👍 Feedback positivo registrado.' : '👎 Feedback negativo registrado.');
-    } catch {
-      adicionarMensagem('ai', '⚠️ Erro ao registrar feedback.');
-    }
-  }
-  async function enviarDiagnostico(modelo, score, tempoMs) {
-    if (!tokenSessao || !clienteSelecionado) return;
-    try {
-      const response = await fetch('https://sync.kognitiva.app/proxy/diagnostico', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          token_sessao: tokenSessao,
-          cliente_nome: clienteSelecionado,
-          modelo,
-          score_resposta: score,
-          tempo_total_ms: tempoMs,
-        }),
-      });
-      const data = await response.json();
-      if (data.classificacao) {
-        adicionarMensagem('ai', `📊 Diagnóstico: ${data.classificacao}`);
-      }
-    } catch {
-      adicionarMensagem('ai', '⚠️ Erro ao enviar diagnóstico.');
-    }
-  }
-  function encerrarSessao() {
-    adicionarMensagem('ai', '🔒 Sessão encerrada. Obrigado por usar a Kognitiva!');
-    clienteSelecionado = null;
-    localStorage.removeItem('clienteSelecionado');
-    chatMessages.innerHTML = '';
-  }
-  async function obterToken() {
-    try {
-      const response = await fetch("https://sync.kognitiva.app/proxy/token", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          user_id: "visitante_web",
-          ip: "000.000.000.000",
-          user_agent: navigator.userAgent,
-        }),
-      });
-      const data = await response.json();
-      if (response.ok && data.tokenConfirmado) {
-        tokenSessao = data.token_sessao;
-        console.log("🔐 Token obtido com sucesso.");
-      } else {
-        console.error("❌ Falha ao obter token:", data);
-      }
-    } catch (err) {
-      console.error("❌ Erro na requisição do token:", err);
-    }
-  }
-  async function buscarClientes() {
-    // Substituir por chamada real a API de clientes
-    return ['Oriente Marketing', 'Nova Era Logística', 'Grupo SCC'];
-  }
-  async function buscarHistorico(cliente) {
-    if (!tokenSessao) return [];
-    try {
-      const response = await fetch(`https://sync.kognitiva.app/proxy/contexto`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token_sessao: tokenSessao, contexto: { cliente_nome: cliente } }),
-      });
-      if (!response.ok) throw new Error("Falha ao buscar contexto");
-      const data = await response.json();
-      if (data && data.contexto && data.contexto.historico) {
-        return data.contexto.historico;
-      }
-      return [];
-    } catch (err) {
-      console.error("Erro ao buscar histórico:", err);
-      return [];
-    }
-  }
-  function renderizarLista() {
-    clientList.innerHTML = '';
-    clientes.sort((a, b) => a.localeCompare(b));
-    clientes.forEach(nome => {
-      const li = document.createElement('li');
-      li.textContent = nome;
-      li.dataset.name = nome;
-      if (nome === clienteSelecionado) li.classList.add('active');
-      clientList.appendChild(li);
-    });
-  }
-  function renderizarHistorico(mensagens) {
-    chatMessages.innerHTML = '';
-    if (!mensagens.length) {
-      adicionarMensagem('ai', 'Olá! Sou a IA da Kognitiva. Como posso te ajudar hoje?');
-      adicionarMensagem('ai', `✅ Cliente selecionado: ${clienteSelecionado}`);
-      return;
-    }
-    mensagens.forEach(m => {
-      adicionarMensagem(m.tipo, m.texto);
-    });
-  }
-  async function selecionarCliente(nome) {
-    clienteSelecionado = nome;
-    localStorage.setItem('clienteSelecionado', nome);
-    renderizarLista();
-    const historico = await buscarHistorico(nome);
-    renderizarHistorico(historico);
-  }
-  async function enviarMensagem() {
-    const texto = inputMensagem.value.trim();
-    if (!texto || !clienteSelecionado || !tokenSessao) return;
-    if (texto === '/encerrar') {
-      encerrarSessao();
-      inputMensagem.value = '';
-      return;
-    }
-    if (texto === '👍') {
-      await enviarFeedback('positivo');
-      inputMensagem.value = '';
-      return;
-    }
-    if (texto === '👎') {
-      await enviarFeedback('negativo');
-      inputMensagem.value = '';
-      return;
-    }
-    adicionarMensagem('user', texto);
-    inputMensagem.value = '';
-    adicionarMensagem('ai', '⌛ Processando resposta...');
-    try {
-      const response = await fetch('https://sync.kognitiva.app/executar', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${tokenSessao}`,
-        },
-        body: JSON.stringify({
-          token_sessao: tokenSessao,
-          cliente_nome: clienteSelecionado,
-          objetivo_interacao: texto,
-        }),
-      });
-      const data = await response.json();
-      const loadingMsg = [...chatMessages.children].find(div => div.textContent.includes('⌛ Processando resposta'));
-      if (loadingMsg) loadingMsg.remove();
-      if (data.resposta) {
-        adicionarMensagem('ai', data.resposta);
-        if (data.modelo_utilizado && data.score_resposta != null) {
-          adicionarMensagem('ai', `🧠 Modelo: ${data.modelo_utilizado} | Score: ${data.score_resposta}`);
-          await enviarDiagnostico(data.modelo_utilizado, data.score_resposta, 0);
-        }
-      }
-    } catch {
-      adicionarMensagem('ai', '⚠️ Erro ao comunicar com a IA.');
-    }
-  }
-  botaoEnviar.onclick = enviarMensagem;
-  inputMensagem.onkeydown = e => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      enviarMensagem();
-    }
-  };
-  clientList.onclick = e => {
-    if (e.target.tagName === 'LI') {
-      selecionarCliente(e.target.dataset.name);
-    }
-  };
-  (async () => {
-    await obterToken();
-    clientes = await buscarClientes();
-    renderizarLista();
-    const salvo = localStorage.getItem('clienteSelecionado');
-    if (salvo && clientes.includes(salvo)) {
-      await selecionarCliente(salvo);
-    }
-  })();
-})();
-</script>
+  <script src="mainPage.js"></script>
+  <script src="execControl.js"></script>
+  <script src="contextService.js"></script>
+  <script src="feedbackBox.js"></script>
+  <script src="diagnosticoFinal.js"></script>
 </body>
 </html>
+
