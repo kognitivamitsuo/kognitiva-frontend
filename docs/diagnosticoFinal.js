@@ -1,33 +1,21 @@
-export async function enviarDiagnostico(tokenSessao, clienteSelecionado, modelo, score, tempoMs) {
-  try {
-    const response = await fetch("https://sync.kognitiva.app/proxy/diagnostico", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        token_sessao: tokenSessao,
-        cliente_nome: clienteSelecionado,
-        modelo,
-        score_resposta: score,
-        tempo_total_ms: tempoMs,
-      }),
-    });
 
-    const data = await response.json();
-    if (data.classificacao) {
-      alert(`Diagnóstico: ${data.classificacao}`);
-    }
-  } catch (err) {
-    console.error("Erro ao enviar diagnóstico:", err);
+// diagnosticoFinal.js – Exibe avaliação da resposta da IA no final da conversa
+
+function exibirDiagnosticoFinal(score, modelo) {
+  let classificacao = "";
+  if (score >= 85) {
+    classificacao = "✅ ÓTIMO – resposta acima da média";
+  } else if (score >= 60) {
+    classificacao = "🟡 REVISAR – resposta aceitável, mas com margem de erro";
+  } else {
+    classificacao = "🔴 FALHA CRÍTICA – resposta inadequada ou incoerente";
   }
+
+  const mensagem = `📊 Diagnóstico final:
+Modelo: ${modelo}
+Score: ${score}
+Classificação: ${classificacao}`;
+
+  adicionarMensagem("sistema", mensagem);
 }
 
-export function configurarEncerramentoDiagnostico() {
-  const btnEncerrar = document.getElementById("btnEncerrarSessao");
-
-  if (btnEncerrar) {
-    btnEncerrar.onclick = () => {
-      alert("🛑 Sessão encerrada com sucesso. Simulação completa.");
-      location.reload();
-    };
-  }
-}
