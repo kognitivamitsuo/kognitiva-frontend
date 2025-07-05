@@ -93,6 +93,9 @@ async function executarIA(payload, tokenSessao) {
       },
       body: JSON.stringify(payload)
     });
+    } catch (erro) {
+      console.error("Erro ao obter token:", erro);
+    }
 
     const dados = await resposta.json();
     return {
@@ -125,11 +128,14 @@ async function salvarContexto(token, cliente, contexto) {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`
       },
-      body: JSON.stringify(payload),
+      body: JSON.stringify({
         cliente_nome: cliente,
         contexto: contexto
       })
     });
+    } catch (erro) {
+      console.error("Erro ao obter token:", erro);
+    }
   } catch (erro) {
     console.error("Erro ao salvar contexto:", erro);
   }
@@ -143,6 +149,9 @@ async function obterContexto(token, cliente) {
         Authorization: `Bearer ${token}`
       }
     });
+    } catch (erro) {
+      console.error("Erro ao obter token:", erro);
+    }
 
     const dados = await resposta.json();
     return dados.contexto || "";
@@ -164,6 +173,9 @@ function configurarFeedback(tokenSessao, clienteAtual) {
     const comentario = prompt("O que podemos melhorar?");
     enviarFeedback(4, comentario || "");
   });
+    } catch (erro) {
+      console.error("Erro ao obter token:", erro);
+    }
 
   async function enviarFeedback(score, comentario) {
     try {
@@ -173,12 +185,15 @@ function configurarFeedback(tokenSessao, clienteAtual) {
           "Content-Type": "application/json",
           Authorization: `Bearer ${tokenSessao}`
         },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({
           cliente_nome: clienteAtual,
           score_resposta: score,
           mensagem_feedback: comentario
         })
       });
+    } catch (erro) {
+      console.error("Erro ao obter token:", erro);
+    }
 
       const dados = await resposta.json();
       adicionarMensagem("sistema", "✅ Feedback enviado com sucesso!");
@@ -230,10 +245,15 @@ document.addEventListener("DOMContentLoaded", () => {
       produto: "default"
     };
     try {
+
+    try {
       const resposta = await fetch("https://sync.kognitiva.app/proxy/token", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
       });
+    } catch (erro) {
+      console.error("Erro ao obter token:", erro);
+    }
       const dados = await resposta.json();
       tokenSessao = dados.token;
     } catch (erro) {
@@ -260,6 +280,9 @@ document.addEventListener("DOMContentLoaded", () => {
       item.onclick = () => iniciarSessaoComCliente(nome);
       listaClientes.appendChild(item);
     });
+    } catch (erro) {
+      console.error("Erro ao obter token:", erro);
+    }
   }
 
   function adicionarMensagem(tipo, texto) {
@@ -293,6 +316,9 @@ document.addEventListener("DOMContentLoaded", () => {
         },
         body: JSON.stringify(payload)
       });
+    } catch (erro) {
+      console.error("Erro ao obter token:", erro);
+    }
       const dados = await resposta.json();
       adicionarMensagem("ia", dados.resposta);
       salvarContexto(tokenSessao, clienteAtual, dados.superprompt);
@@ -307,6 +333,9 @@ document.addEventListener("DOMContentLoaded", () => {
   input.addEventListener("keypress", (e) => {
     if (e.key === "Enter") enviarMensagem();
   });
+    } catch (erro) {
+      console.error("Erro ao obter token:", erro);
+    }
 
   input.addEventListener("blur", () => {
     const texto = input.value.trim();
@@ -318,13 +347,15 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
   });
+    } catch (erro) {
+      console.error("Erro ao obter token:", erro);
+    }
 
   obterToken();
 });
-</script>
-</body>
-</html>
-
+    } catch (erro) {
+      console.error("Erro ao obter token:", erro);
+    }
 </script>
 </body>
 </html>
