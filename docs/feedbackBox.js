@@ -1,44 +1,36 @@
-export function configurarFeedback(tokenSessao, clienteSelecionado) {
-  const btnUp = document.getElementById("btnFeedbackUp");
-  const btnDown = document.getElementById("btnFeedbackDown");
 
-  if (btnUp) {
-    btnUp.onclick = async () => {
-      try {
-        await fetch("https://sync.kognitiva.app/proxy/feedback", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            cliente_nome: clienteSelecionado,
-            feedback_usuario: "positivo",
-            score_resposta: 10,
-          }),
-        });
-        alert("👍 Feedback positivo registrado com sucesso.");
-      } catch {
-        alert("⚠ Erro ao registrar feedback positivo.");
-      }
-    };
-  }
+// feedbackBox.js – Botões de avaliação + campo para feedback textual
 
-  if (btnDown) {
-    btnDown.onclick = async () => {
-      const comentario = prompt("O que podemos melhorar?");
-      if (!comentario) return;
-      try {
-        await fetch("https://sync.kognitiva.app/proxy/feedback", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            cliente_nome: clienteSelecionado,
-            feedback_usuario: comentario,
-            score_resposta: 4,
-          }),
-        });
-        alert("👎 Feedback negativo registrado com sucesso.");
-      } catch {
-        alert("⚠ Erro ao registrar feedback negativo.");
-      }
-    };
+function configurarFeedback(tokenSessao, clienteAtual) {
+  const positivo = document.getElementById("btnFeedbackUp");
+  const negativo = document.getElementById("btnFeedbackDown");
+
+  positivo.addEventListener("click", () => enviarFeedback(10, ""));
+  negativo.addEventListener("click", () => {
+    const comentario = prompt("O que podemos melhorar?");
+    enviarFeedback(4, comentario || "");
+  });
+
+  async function enviarFeedback(score, comentario) {
+    try {
+      const resposta = await fetch("https://sync.kognitiva.app/proxy/feedback", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${tokenSessao}`
+        },
+        body: JSON.stringify({
+          cliente_nome: clienteAtual,
+          score_resposta: score,
+          mensagem_feedback: comentario
+        })
+      });
+
+      const dados = await resposta.json();
+      adicionarMensagem("sistema", "✅ Feedback enviado com sucesso!");
+    } catch (erro) {
+      console.error("Erro ao enviar feedback:", erro);
+      adicionarMensagem("sistema", "⚠ Falha ao enviar feedback.");
+    }
   }
 }
