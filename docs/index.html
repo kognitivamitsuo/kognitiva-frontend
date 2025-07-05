@@ -125,7 +125,7 @@ async function salvarContexto(token, cliente, contexto) {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`
       },
-      body: JSON.stringify({
+      body: JSON.stringify(payload),
         cliente_nome: cliente,
         contexto: contexto
       })
@@ -173,7 +173,7 @@ function configurarFeedback(tokenSessao, clienteAtual) {
           "Content-Type": "application/json",
           Authorization: `Bearer ${tokenSessao}`
         },
-        body: JSON.stringify({
+        body: JSON.stringify(payload),
           cliente_nome: clienteAtual,
           score_resposta: score,
           mensagem_feedback: comentario
@@ -222,6 +222,13 @@ document.addEventListener("DOMContentLoaded", () => {
   let clientes = [];
 
   async function obterToken() {
+    const payload = {
+      usuario_id: "visitante_anonimo",
+      cliente_nome: "visitante",
+      segmento: "geral",
+      canal_comunicacao: "chat",
+      produto: "default"
+    };
     try {
       const resposta = await fetch("https://sync.kognitiva.app/proxy/token", {
         method: "POST",
@@ -314,6 +321,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   obterToken();
 });
+</script>
+</body>
+</html>
+
 </script>
 </body>
 </html>
