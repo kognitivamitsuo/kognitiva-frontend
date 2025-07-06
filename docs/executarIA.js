@@ -1,6 +1,6 @@
 const URL_API = "https://sync.kognitiva.app";
 
-async function executarIA(tokenSessao, cliente_nome, mensagem, contexto_valido) {
+async function executarIA(tokenSessao, mensagem, contexto_valido = {}) {
   try {
     const resposta = await fetch(`${URL_API}/executar`, {
       method: "POST",
@@ -9,9 +9,10 @@ async function executarIA(tokenSessao, cliente_nome, mensagem, contexto_valido) 
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        cliente_nome,
-        mensagem,
-        contexto_valido
+        mensagem_usuario: mensagem,
+        contexto: contexto_valido,
+        modo_execucao: "execucao",
+        framework_version: "3.4-finalUX"
       })
     });
 
@@ -20,10 +21,22 @@ async function executarIA(tokenSessao, cliente_nome, mensagem, contexto_valido) 
     }
 
     const resultado = await resposta.json();
-    return resultado.resposta;
+
+    return {
+      resposta: resultado.resposta,
+      modelo: resultado.modelo_utilizado || "desconhecido",
+      score: resultado.score_resposta || null,
+      fallback: resultado.fallback || false
+    };
   } catch (erro) {
     console.error("Erro ao executar IA:", erro);
-    return "⚠ Ocorreu um erro na execução da IA.";
+    return {
+      resposta: "⚠ Ocorreu um erro na execução da IA.",
+      modelo: "fallback",
+      score: 0,
+      fallback: true
+    };
   }
 }
+
 export { executarIA };
