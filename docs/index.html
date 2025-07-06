@@ -3,17 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat Kognitiva</title>
+    <title>Kognitiva Chat</title>
     <style>
         :root {
             /* Cores compatíveis com v3.4 */
             --kgn-primary: #2563eb;
+            --kgn-primary-dark: #1e40af;
             --kgn-bg-dark: #202123;
             --kgn-surface: #2a2c38;
             --kgn-text-primary: #f3f4f6;
             --kgn-text-secondary: #d1d5db;
             --kgn-error: #ef4444;
             --kgn-success: #10b981;
+            --kgn-warning: #f59e0b;
         }
 
         * {
@@ -28,92 +30,63 @@
             color: var(--kgn-text-primary);
             height: 100vh;
             display: flex;
+            position: relative;
         }
 
+        /* Layout principal */
         .kgn-app {
             display: flex;
             width: 100%;
             height: 100%;
         }
 
-        /* Sidebar */
-        .kgn-sidebar {
+        /* Sidebar (B13) */
+        .sidebar {
             background: var(--kgn-bg-dark);
             width: 240px;
             border-right: 1px solid var(--kgn-surface);
             height: 100%;
             overflow-y: auto;
             transition: transform 0.3s ease;
-        }
-
-        .kgn-sidebar-header {
             padding: 1rem;
-            border-bottom: 1px solid var(--kgn-surface);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
         }
 
-        .kgn-client-list {
-            list-style: none;
-        }
-
-        .kgn-client-list li {
-            padding: 0.75rem 1rem;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        .kgn-client-list li:hover {
-            background-color: var(--kgn-surface);
-        }
-
-        /* Área principal */
-        .kgn-chat-area {
+        /* Área do chat */
+        .chat-container {
             flex: 1;
             display: flex;
             flex-direction: column;
             height: 100%;
+            position: relative;
         }
 
-        .kgn-chat-header {
-            padding: 1rem;
-            background-color: var(--kgn-surface);
-            border-bottom: 1px solid var(--kgn-surface);
-            display: flex;
-            align-items: center;
-        }
-
-        .kgn-menu-btn {
-            background: none;
-            border: none;
-            color: var(--kgn-text-primary);
-            font-size: 1.5rem;
-            margin-right: 1rem;
-            cursor: pointer;
-        }
-
-        .kgn-messages {
+        .chat-box {
             flex: 1;
             overflow-y: auto;
             padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
         }
 
+        /* Mensagens */
         .kgn-message {
-            margin-bottom: 1rem;
             max-width: 80%;
             padding: 0.75rem 1rem;
-            border-radius: 0.5rem;
+            border-radius: 0.75rem;
+            line-height: 1.5;
         }
 
         .kgn-message.kgn-ai {
             background-color: var(--kgn-surface);
             align-self: flex-start;
+            border-top-left-radius: 0;
         }
 
         .kgn-message.kgn-user {
             background-color: var(--kgn-primary);
             align-self: flex-end;
+            border-top-right-radius: 0;
         }
 
         .kgn-message-meta {
@@ -125,81 +98,155 @@
         }
 
         /* Input area */
-        .kgn-input-container {
+        .input-container {
             padding: 1rem;
             border-top: 1px solid var(--kgn-surface);
             display: flex;
             gap: 0.5rem;
+            background-color: var(--kgn-bg-dark);
         }
 
-        .kgn-input-container textarea {
+        .input-container input {
             flex: 1;
-            padding: 0.75rem;
+            padding: 0.75rem 1rem;
             border-radius: 0.5rem;
             border: none;
             background-color: var(--kgn-surface);
             color: var(--kgn-text-primary);
-            resize: none;
-            min-height: 50px;
         }
 
-        .kgn-input-container button {
+        .input-container button {
             padding: 0 1.5rem;
             background-color: var(--kgn-primary);
             color: white;
             border: none;
             border-radius: 0.5rem;
             cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .input-container button:hover {
+            background-color: var(--kgn-primary-dark);
         }
 
         /* Componentes flutuantes */
-        #lgpdAviso {
+        .mensagem-sistema {
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            margin: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .mensagem-sistema.fixo {
             position: fixed;
             bottom: 1rem;
             left: 1rem;
             right: 1rem;
             background-color: var(--kgn-surface);
-            padding: 1rem;
-            border-radius: 0.5rem;
             max-width: 600px;
             margin: 0 auto;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        #diagnosticoFinal {
+        .diagnostico-box {
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             background-color: var(--kgn-surface);
-            padding: 2rem;
-            border-radius: 0.5rem;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
             max-width: 600px;
             width: 90%;
             display: none;
+            z-index: 200;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
         }
 
-        #feedbackContainer {
+        /* Botão resetar */
+        .resetar-chat {
+            position: fixed;
+            bottom: 5rem;
+            right: 1rem;
+            background-color: var(--kgn-surface);
+            color: var(--kgn-text-primary);
+            border: none;
+            border-radius: 50%;
+            width: 3rem;
+            height: 3rem;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            transition: transform 0.2s;
+        }
+
+        .resetar-chat:hover {
+            transform: scale(1.1);
+        }
+
+        /* Feedback box */
+        .feedback-box {
             display: flex;
             gap: 0.5rem;
             margin-top: 0.5rem;
         }
 
-        .kgn-feedback-btn {
+        .feedback-btn {
             background: none;
             border: 1px solid var(--kgn-text-secondary);
             color: var(--kgn-text-secondary);
             padding: 0.25rem 0.5rem;
             border-radius: 0.25rem;
             cursor: pointer;
+            transition: all 0.2s;
         }
 
-        .kgn-typing-indicator {
+        .feedback-btn:hover {
+            border-color: var(--kgn-primary);
+            color: var(--kgn-primary);
+        }
+
+        /* Acessibilidade */
+        button:focus, input:focus {
+            outline: 2px solid var(--kgn-primary);
+            outline-offset: 2px;
+        }
+
+        /* Responsividade */
+        @media (max-width: 767px) {
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                transform: translateX(-100%);
+                z-index: 300;
+                width: 280px;
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .resetar-chat {
+                bottom: 6rem;
+            }
+        }
+
+        /* Animação de digitação */
+        .typing-indicator {
             display: flex;
             gap: 0.25rem;
-            margin-bottom: 1rem;
+            margin: 0.5rem 0;
         }
 
-        .kgn-dot {
+        .typing-dot {
             width: 8px;
             height: 8px;
             background-color: var(--kgn-text-secondary);
@@ -207,11 +254,11 @@
             animation: typing 1.4s infinite ease-in-out;
         }
 
-        .kgn-dot:nth-child(2) {
+        .typing-dot:nth-child(2) {
             animation-delay: 0.2s;
         }
 
-        .kgn-dot:nth-child(3) {
+        .typing-dot:nth-child(3) {
             animation-delay: 0.4s;
         }
 
@@ -219,125 +266,96 @@
             0%, 60%, 100% { transform: translateY(0); }
             30% { transform: translateY(-5px); }
         }
-
-        /* Acessibilidade */
-        button:focus, textarea:focus {
-            outline: 2px solid var(--kgn-primary);
-        }
-
-        /* Responsividade */
-        @media (max-width: 767px) {
-            .kgn-sidebar {
-                position: fixed;
-                top: 0;
-                left: 0;
-                bottom: 0;
-                transform: translateX(-100%);
-                z-index: 100;
-            }
-
-            .kgn-sidebar.active {
-                transform: translateX(0);
-            }
-        }
-
-        /* Fallback */
-        [data-framework-fallback="js-disabled"] {
-            display: none;
-            padding: 1rem;
-            text-align: center;
-        }
-
-        .no-js [data-framework-fallback="js-disabled"] {
-            display: block;
-        }
     </style>
 </head>
 <body>
     <div class="kgn-app">
-        <!-- Sidebar (B13) -->
-        <aside class="kgn-sidebar" id="sidebarClientes" aria-label="Clientes recentes" data-framework-block="B13">
-            <div class="kgn-sidebar-header">
-                <h2>Clientes</h2>
-                <button class="kgn-close-btn" aria-label="Fechar sidebar">×</button>
-            </div>
-            <ul class="kgn-client-list" role="list">
-                <li role="listitem" tabindex="0">João Silva</li>
-                <li role="listitem" tabindex="0">Maria Oliveira</li>
-                <li role="listitem" tabindex="0">Carlos Souza</li>
+        <!-- ⚠️ LGPD (B15) -->
+        <div id="lgpdAviso" class="mensagem-sistema fixo" role="alert" data-framework-block="B15">
+            ⚠️ Este chat respeita a LGPD. Ao continuar, você concorda com o uso dos dados conforme nossa política.
+            <button id="lgpdAceitar" style="margin-left: 1rem; padding: 0.25rem 0.75rem; border-radius: 0.25rem; background-color: var(--kgn-primary); border: none; color: white;">Aceitar</button>
+        </div>
+
+        <!-- ✅ Sidebar de clientes (B13) -->
+        <aside class="sidebar" id="sidebarClientes" aria-label="Clientes recentes" data-framework-block="B13">
+            <h2 style="margin-bottom: 1rem; font-size: 1.25rem;">Clientes</h2>
+            <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.5rem;">
+                <li style="padding: 0.5rem; border-radius: 0.25rem; cursor: pointer; transition: background-color 0.2s;" 
+                    role="listitem" tabindex="0" onmouseover="this.style.backgroundColor='var(--kgn-surface)'" 
+                    onmouseout="this.style.backgroundColor='transparent'">
+                    João Silva
+                </li>
+                <li style="padding: 0.5rem; border-radius: 0.25rem; cursor: pointer; transition: background-color 0.2s;" 
+                    role="listitem" tabindex="0" onmouseover="this.style.backgroundColor='var(--kgn-surface)'" 
+                    onmouseout="this.style.backgroundColor='transparent'">
+                    Maria Oliveira
+                </li>
+                <li style="padding: 0.5rem; border-radius: 0.25rem; cursor: pointer; transition: background-color 0.2s;" 
+                    role="listitem" tabindex="0" onmouseover="this.style.backgroundColor='var(--kgn-surface)'" 
+                    onmouseout="this.style.backgroundColor='transparent'">
+                    Carlos Souza
+                </li>
             </ul>
         </aside>
 
-        <!-- Área principal -->
-        <main class="kgn-chat-area" aria-live="polite">
-            <!-- Cabeçalho -->
-            <header class="kgn-chat-header">
-                <button class="kgn-menu-btn" aria-label="Abrir menu">☰</button>
-                <h1>Chat Kognitiva</h1>
+        <!-- ✅ Área principal do chat -->
+        <main class="chat-container" aria-live="polite">
+            <!-- Cabeçalho do chat -->
+            <header style="padding: 1rem; background-color: var(--kgn-surface); display: flex; align-items: center; gap: 1rem;">
+                <button id="menuButton" aria-label="Abrir menu" style="background: none; border: none; color: var(--kgn-text-primary); font-size: 1.5rem; cursor: pointer;">☰</button>
+                <h1 style="font-size: 1.25rem;">Kognitiva Chat</h1>
             </header>
 
-            <!-- Mensagens (B04-B06) -->
-            <div class="kgn-messages" id="chatMessages" role="log" data-framework-block="B04-B06">
+            <!-- Área de mensagens (B04-B06) -->
+            <div id="chatMessages" class="chat-box" role="log" data-framework-block="B04-B06">
+                <!-- Exemplo de mensagem da IA -->
                 <div class="kgn-message kgn-ai" role="article" aria-labelledby="msg1">
-                    <div id="msg1" class="kgn-message-content">Olá! Como posso ajudar?</div>
+                    <div id="msg1" class="kgn-message-content">Olá! Sou o assistente virtual da Kognitiva. Como posso ajudar você hoje?</div>
                     <div class="kgn-message-meta">
                         <span class="kgn-time">10:30 AM</span>
-                        <span class="kgn-ai-label">Kognitiva</span>
+                        <span class="kgn-ai-label">Assistente</span>
+                    </div>
+                    <!-- Feedback (B17) -->
+                    <div class="feedback-box" data-framework-block="B17">
+                        <p style="font-size: 0.75rem; color: var(--kgn-text-secondary);">Esta resposta foi útil?</p>
+                        <button class="feedback-btn" aria-label="Gostei">👍</button>
+                        <button class="feedback-btn" aria-label="Não gostei">👎</button>
                     </div>
                 </div>
-                <div class="kgn-message kgn-user" role="article" aria-labelledby="msg2">
-                    <div id="msg2" class="kgn-message-content">Preciso de ajuda com meu pedido</div>
-                    <div class="kgn-message-meta">
-                        <span class="kgn-time">10:31 AM</span>
-                        <span class="kgn-user-label">Você</span>
-                    </div>
-                </div>
-                <div class="kgn-typing-indicator" id="typingIndicator">
-                    <div class="kgn-dot"></div>
-                    <div class="kgn-dot"></div>
-                    <div class="kgn-dot"></div>
+
+                <!-- Indicador de digitação -->
+                <div class="typing-indicator" id="typingIndicator" style="align-self: flex-start; display: none;">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
                 </div>
             </div>
 
-            <!-- Input (B07-B09) -->
-            <form class="kgn-input-container" aria-label="Enviar mensagem" data-framework-block="B07-B09">
-                <textarea id="inputMensagem" aria-label="Digite sua mensagem" placeholder="Digite sua mensagem..."></textarea>
+            <!-- Campo de entrada (B07-B09) -->
+            <form class="input-container" aria-label="Enviar mensagem" data-framework-block="B07-B09">
+                <input type="text" id="inputMensagem" placeholder="Digite sua mensagem..." aria-label="Digite sua mensagem" />
                 <button type="submit" id="botaoEnviar">Enviar</button>
             </form>
         </main>
 
-        <!-- Componentes flutuantes -->
-        <div class="kgn-diagnostic" id="diagnosticoFinal" data-framework-block="B16" aria-modal="true">
-            <h3>Diagnóstico Final</h3>
-            <p>Análise completa da conversa será exibida aqui.</p>
+        <!-- ✅ Diagnóstico Final (B16) -->
+        <div id="diagnosticoFinal" class="diagnostico-box" aria-modal="true" data-framework-block="B16">
+            <h3 style="margin-bottom: 1rem;">Diagnóstico Final</h3>
+            <p style="margin-bottom: 1rem;">Análise completa da conversa será exibida aqui.</p>
+            <button id="fecharDiagnostico" style="padding: 0.5rem 1rem; background-color: var(--kgn-primary); color: white; border: none; border-radius: 0.25rem; cursor: pointer;">Fechar</button>
         </div>
 
-        <div class="kgn-feedback" id="feedbackContainer" data-framework-block="B17">
-            <p>Avalie esta resposta:</p>
-            <div class="kgn-feedback-buttons">
-                <button class="kgn-feedback-btn kgn-like" aria-label="Gostei">👍</button>
-                <button class="kgn-feedback-btn kgn-dislike" aria-label="Não gostei">👎</button>
-            </div>
-        </div>
-
-        <div class="kgn-lgpd" id="lgpdAviso" role="alert" data-framework-block="B15">
-            <p>Utilizamos cookies para melhorar sua experiência. Ao continuar, você concorda com nossa <a href="#">Política de Privacidade</a>.</p>
-            <button id="lgpdAceitar">Aceitar</button>
-        </div>
+        <!-- ✅ Botão resetar chat -->
+        <button id="botaoResetar" class="resetar-chat" aria-label="Resetar conversa" title="Resetar conversa">🔁</button>
     </div>
 
-    <!-- Fallback para JS desativado -->
-    <div data-framework-fallback="js-disabled">
-        <p>🔒 Ative JavaScript para acessar todas as funcionalidades.</p>
-        <a href="/?nojs=1">Versão simplificada</a>
-    </div>
-
+    <!-- Scripts JS -->
     <script>
         // Verificação de elementos obrigatórios
         document.addEventListener('DOMContentLoaded', function() {
             const requiredElements = ['sidebarClientes', 'chatMessages', 'inputMensagem', 
-                                     'botaoEnviar', 'lgpdAviso', 'diagnosticoFinal', 
-                                     'feedbackContainer'];
+                                    'botaoEnviar', 'lgpdAviso', 'diagnosticoFinal', 
+                                    'botaoResetar'];
             
             const missing = requiredElements.filter(id => !document.getElementById(id));
             
@@ -350,6 +368,14 @@
             // Verificar blocos implementados
             const blocks = document.querySelectorAll('[data-framework-block]');
             console.log(`Blocos implementados: ${blocks.length}`);
+            
+            // Simular links para os scripts (seriam substituídos pelos reais)
+            console.log("Scripts carregados: main.js, execControl.js, executarIA.js, reaproveitarSessao.js, diagnosticoFinal.js, feedbackBox.js");
+        });
+
+        // Menu mobile
+        document.getElementById('menuButton').addEventListener('click', function() {
+            document.querySelector('.sidebar').classList.toggle('active');
         });
     </script>
 </body>
