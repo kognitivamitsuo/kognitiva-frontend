@@ -1,8 +1,11 @@
 <!DOCTYPE html>
+
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+&lt;!-- 🔷 B00: Cabeçalho e configuração do estilo --&gt;
+
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
 <title>Kognitiva Chat Dinâmico Integrado</title>
 <style>
   body {
@@ -109,23 +112,34 @@
 </head>
 <body>
 <!-- B15 – LGPD -->
+
+&lt;!-- 🔷 B15: Aviso LGPD fixo --&gt;
 <div id="lgpdAviso" style="position:fixed;top:0;width:100%;background:#facc15;color:black;padding:0.5rem;text-align:center;font-size:14px;z-index:999;">
   ⚠️ Este chat respeita a LGPD. Ao continuar, você concorda com o uso dos dados conforme nossa política.
 </div>
-
 <div class="sidebar">
-  <h2>Clientes</h2>
-  <ul class="client-list" id="clientList"></ul>
+<h2>Clientes</h2>
+
+&lt;!-- 🔷 B13: Sidebar com lista de clientes --&gt;
+<ul class="client-list" id="clientList"></ul>
 </div>
+
+&lt;!-- 🔷 B10/B11: Área principal do chat --&gt;
 <div class="chat-container">
-  <div class="chat-messages" id="chatMessages">
-    <div class="message ai">Olá! Sou a IA da Kognitiva. Como posso te ajudar hoje?</div>
-  </div>
-  <div class="chat-input-wrapper">
-    <input type="text" id="inputMensagem" placeholder="Digite sua mensagem..." autocomplete="off" />
-    <button class="send-btn" id="botaoEnviar">Enviar</button>
-  </div>
+
+&lt;!-- 🔷 B10: Mensagens da conversa --&gt;
+<div class="chat-messages" id="chatMessages">
+<div class="message ai">Olá! Sou a IA da Kognitiva. Como posso te ajudar hoje?</div>
 </div>
+
+&lt;!-- 🔷 B11: Campo de entrada e botão --&gt;
+<div class="chat-input-wrapper">
+<input autocomplete="off" id="inputMensagem" placeholder="Digite sua mensagem..." type="text"/>
+<button class="send-btn" id="botaoEnviar">Enviar</button>
+</div>
+</div>
+
+&lt;!-- 🔷 Scripts inline: IA, feedback, diagnóstico, reaproveitamento --&gt;
 <script>
 (() => {
   const clientList = document.getElementById('clientList');
