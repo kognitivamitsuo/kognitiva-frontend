@@ -13,18 +13,22 @@ async function verificarReaproveitamentoSessao(tokenSessao, cliente_nome) {
     if (resposta.ok) {
       const dados = await resposta.json();
       if (dados && dados.superprompt) {
-        console.log("ðŸ’¡ Reaproveitando contexto anterior com", cliente_nome);
+        console.log("💡 Reaproveitando contexto anterior com", cliente_nome);
         const chat = document.getElementById("chatMessages");
         const alerta = document.createElement("div");
-        alerta.className = "chat-message ai";
-        alerta.innerText = `ðŸ’¡ Reaproveitando contexto anterior com ${cliente_nome}`;
+        alerta.className = "message ai";
+        alerta.innerText = `💡 Reaproveitando contexto anterior com ${cliente_nome}`;
         chat.appendChild(alerta);
+        return dados.superprompt; // Reaproveitamento real
       }
     } else {
-      console.warn("âš  Contexto anterior nÃ£o encontrado.");
+      console.warn("⚠️ Contexto anterior não encontrado.");
     }
   } catch (erro) {
     console.error("Erro ao verificar contexto anterior:", erro);
   }
+
+  return null;
 }
+
 export { verificarReaproveitamentoSessao };
