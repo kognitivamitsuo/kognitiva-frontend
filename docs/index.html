@@ -292,6 +292,33 @@
             outline-offset: 2px;
         }
     </style>
+    
+    <script>
+        window.initChat = window.initChat || function() {
+            console.log('[Kognitiva] Chat inicializado');
+            renderMensagemInicial();
+            setupEventHandlers();
+        };
+        
+        window.renderMensagemIA = window.renderMensagemIA || function(data) {
+            const chatMessages = document.getElementById('chatMessages');
+            if (!chatMessages) return;
+
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'kgn-message kgn-ai';
+            messageDiv.setAttribute('role', 'article');
+            messageDiv.innerHTML = `
+                <div class="kgn-message-content">${data.conteudo || data}</div>
+                <div class="kgn-message-meta">
+                    <span class="kgn-time">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                    <span class="kgn-ai-label">Kognitiva</span>
+                </div>
+            `;
+
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        };
+    </script>
 </head>
 <body>
     <input type="hidden" id="tokenSessao" />
@@ -334,7 +361,6 @@
                 </div>
             </div>
 
-            <!-- Formulário para envio de mensagens (obrigatório) -->
             <form id="formMensagem" style="display: contents;">
                 <div class="kgn-input-area" data-framework-block="B07-B09"
                      data-ai-component="input-area" data-validation-rules="required-structure">
@@ -343,7 +369,6 @@
                 </div>
             </form>
 
-            <!-- Botão de resetar sessão -->
             <button id="botaoResetar" hidden>Resetar Sessão</button>
         </main>
 
@@ -369,14 +394,12 @@
         </div>
     </div>
 
-    <!-- Scripts principais -->
     <script src="https://kognitivamitsuo.github.io/kognitiva-frontend/utils/main.js"></script>
     <script src="https://kognitivamitsuo.github.io/kognitiva-frontend/utils/execControl.js"></script>
     <script src="https://kognitivamitsuo.github.io/kognitiva-frontend/utils/reaproveitarSessao.js"></script>
     <script src="https://kognitivamitsuo.github.io/kognitiva-frontend/utils/feedbackBox.js"></script>
     <script src="https://kognitivamitsuo.github.io/kognitiva-frontend/utils/diagnosticoFinal.js"></script>
 
-    <!-- Script de debug visual -->
     <script>
         const token = localStorage.getItem("kgn_jwt");
         if (token) {
@@ -387,7 +410,6 @@
     </script>
 
     <script>
-        // Funções globais para integração com IA
         window.handleSubmitMessage = function() {
             const inputMensagem = document.getElementById('inputMensagem');
             const chatMessages = document.getElementById('chatMessages');
@@ -395,14 +417,12 @@
             
             if (!mensagem) return;
             
-            // Verifica token antes de enviar
             const token = localStorage.getItem("kgn_jwt");
             if (!token) {
                 console.error("Token JWT ausente - 401 Unauthorized");
                 return;
             }
             
-            // Adiciona mensagem do usuário
             const messageId = 'msg-' + Date.now();
             const timeString = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
             
@@ -422,7 +442,6 @@
             inputMensagem.value = '';
             chatMessages.scrollTop = chatMessages.scrollHeight;
             
-            // Mostra indicador de digitação
             const typingIndicator = document.createElement('div');
             typingIndicator.className = 'kgn-typing-indicator';
             typingIndicator.innerHTML = `
@@ -433,7 +452,6 @@
             chatMessages.appendChild(typingIndicator);
             chatMessages.scrollTop = chatMessages.scrollHeight;
             
-            // Chamada real à IA
             const contexto = JSON.parse(localStorage.getItem('contexto') || '{}');
             window.executarIA(mensagem, contexto)
                 .then(resposta => {
@@ -467,36 +485,13 @@
                 });
         };
 
-        // Implementação mínima de renderMensagemIA se não existir
-        window.renderMensagemIA = window.renderMensagemIA || function(data) {
-            const chatMessages = document.getElementById('chatMessages');
-            if (!chatMessages) return;
-            
-            const messageDiv = document.createElement('div');
-            messageDiv.className = 'kgn-message kgn-ai';
-            messageDiv.setAttribute('role', 'article');
-            messageDiv.setAttribute('aria-labelledby', data.id);
-            messageDiv.innerHTML = `
-                <div id="${data.id}" class="kgn-message-content">${data.conteudo}</div>
-                <div class="kgn-message-meta">
-                    <span class="kgn-time">${data.time}</span>
-                    <span class="kgn-ai-label">Kognitiva</span>
-                </div>
-            `;
-            
-            chatMessages.appendChild(messageDiv);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        };
-
         window.generateMessageId = function() {
             return 'msg-' + Date.now();
         };
     </script>
 
     <script>
-        // Configuração inicial
         document.addEventListener('DOMContentLoaded', function() {
-            // Menu mobile
             const menuButton = document.getElementById('menuButton');
             const sidebar = document.querySelector('.kgn-sidebar');
             const closeButton = document.querySelector('.kgn-close-btn');
@@ -513,7 +508,6 @@
                 });
             }
 
-            // LGPD
             const lgpdAceitarBtn = document.getElementById('lgpdAceitar');
             const lgpdAviso = document.getElementById('lgpdAviso');
             
@@ -528,7 +522,6 @@
                 }
             }
 
-            // Eventos de envio
             const inputMensagem = document.getElementById('inputMensagem');
             const botaoEnviar = document.getElementById('botaoEnviar');
             const formMensagem = document.getElementById('formMensagem');
@@ -553,7 +546,6 @@
                 });
             }
 
-            // Botão resetar sessão
             const botaoResetar = document.getElementById('botaoResetar');
             if (botaoResetar) {
                 botaoResetar.addEventListener('click', function() {
@@ -564,9 +556,7 @@
             }
         });
 
-        // Inicialização completa
         window.onload = function() {
-            // Verifica reaproveitamento de sessão
             const tokenSessao = localStorage.getItem("kgn_jwt");
             const contexto = JSON.parse(localStorage.getItem("contexto") || "{}");
             const cliente_nome = contexto?.cliente_nome || null;
@@ -575,13 +565,11 @@
                 window.verificarReaproveitamentoSessao(tokenSessao, cliente_nome);
             }
             
-            // Mostra botão resetar se tiver token
             const botaoResetar = document.getElementById('botaoResetar');
             if (botaoResetar && tokenSessao) {
                 botaoResetar.hidden = false;
             }
             
-            // Inicializa o chat
             if (typeof window.initChat === 'function') {
                 window.initChat();
             } else {
@@ -591,7 +579,6 @@
     </script>
 
     <script data-ai-validation="inline">
-        // Validação de elementos
         document.addEventListener('DOMContentLoaded', () => {
             const required = ['sidebarClientes', 'chatMessages', 'inputMensagem', 'botaoEnviar', 'lgpdAviso', 'diagnosticoFinal', 'diagnosticoConteudo', 'feedbackContainer', 'formMensagem', 'botaoResetar'];
             const missing = required.filter(id => !document.getElementById(id));
@@ -605,7 +592,6 @@
     </script>
 
     <script>
-        // Filtro de console
         (function() {
             const originalConsole = {
                 log: console.log,
