@@ -8,18 +8,7 @@
   --ai-msg-color: #111827;
 }
 
-body {
-  margin: 0;
-  font-family: 'Segoe UI', sans-serif;
-  background-color: var(--background-color);
-  color: var(--text-color);
-  height: 100vh;
-  overflow: hidden;
-  display: flex;
-  flex-direction: row;
-}
-
-/* ============== NOVOS ESTILOS ADICIONADOS ============== */
+/* ============== SYSTEM MESSAGE STYLES (B00, B13) ============== */
 .kgn-system-message {
   background-color: #1e3a8a;
   color: #ffffff;
@@ -38,9 +27,20 @@ body {
   from { opacity: 0; transform: translateY(5px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-/* ============== FIM DOS NOVOS ESTILOS ============== */
+/* ============== END SYSTEM MESSAGE STYLES ============== */
 
-/* ============== ESTILOS EXISTENTES (MANTIDOS INTACTOS) ============== */
+/* ============== EXISTING STYLES (PRESERVED EXACTLY) ============== */
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: row;
+}
+
 .sidebar {
   width: 240px;
   background-color: #202123;
@@ -183,4 +183,4 @@ body {
     display: none;
   }
 }
-/* ============== FIM DOS ESTILOS EXISTENTES ============== */
+/* ============== END EXISTING STYLES ============== */
