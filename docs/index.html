@@ -5,11 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="color-scheme" content="dark">
     <meta name="generator" content="AI-HTML-100%">
-    
-    <!-- Conexão otimizada -->
     <link rel="preconnect" href="https://static.parastorage.com" crossorigin>
-    
-    <title>Chat Kognitiva v5.0</title>
+    <title>Chat Kognitiva v3.6</title>
     <style>
         :root {
             --kgn-blue: #2563eb;
@@ -297,14 +294,12 @@
     </style>
 </head>
 <body>
-    <!-- SISTEMA DE FALLBACK AUTOMÁTICO -->
     <div data-ai-fallback-system>
         <template data-fallback="js-disabled">Seu navegador não suporta JavaScript. Algumas funcionalidades podem não funcionar corretamente.</template>
         <template data-fallback="css-disabled">Estilos desativados. Ative o CSS para melhor visualização.</template>
     </div>
 
     <div class="kgn-app">
-        <!-- Sidebar (B13) -->
         <aside class="kgn-sidebar" id="sidebarClientes" data-framework-block="B13" aria-label="Clientes recentes" 
                data-ai-component="client-sidebar" data-validation-rules="required-aria required-id">
             <div class="kgn-sidebar-header">
@@ -318,7 +313,6 @@
             </ul>
         </aside>
 
-        <!-- Main chat area -->
         <main class="kgn-main" data-ai-component="chat-main" data-validation-rules="required-structure">
             <header class="kgn-chat-header">
                 <button class="kgn-menu-btn" id="menuButton" aria-label="Abrir menu">☰</button>
@@ -367,8 +361,15 @@
         </div>
     </div>
 
+    <!-- Scripts principais -->
+    <script src="https://kognitivamitsuo.github.io/kognitiva-frontend/utils/mainPage.js"></script>
+    <script src="https://kognitivamitsuo.github.io/kognitiva-frontend/utils/execControl.js"></script>
+    <script src="https://kognitivamitsuo.github.io/kognitiva-frontend/utils/reaproveitarSessao.js"></script>
+    <script src="https://kognitivamitsuo.github.io/kognitiva-frontend/utils/feedbackBox.js"></script>
+    <script src="https://kognitivamitsuo.github.io/kognitiva-frontend/utils/diagnosticoFinal.js"></script>
+
     <script>
-        // Função global para envio de mensagens (F01 corrigido)
+        // Funções globais para integração com IA
         window.handleSubmitMessage = function() {
             const inputMensagem = document.getElementById('inputMensagem');
             const chatMessages = document.getElementById('chatMessages');
@@ -407,47 +408,49 @@
             chatMessages.appendChild(typingIndicator);
             chatMessages.scrollTop = chatMessages.scrollHeight;
             
-            // Simulação de resposta da IA
-            setTimeout(() => {
-                if (typingIndicator.parentNode) {
-                    typingIndicator.remove();
-                }
-                
-                const respostas = [
-                    "Entendi sua solicitação. Vou ajudar com isso.",
-                    "Ótima pergunta! Aqui está a informação que você precisa...",
-                    "Com base em meus registros, posso informar que...",
-                    "Posso sugerir algumas opções para resolver isso...",
-                    "Obrigado por compartilhar. Vamos analisar seu caso."
-                ];
-                const resposta = respostas[Math.floor(Math.random() * respostas.length)];
-                
-                const respostaId = 'msg-' + Date.now();
-                const respostaTimeString = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                
-                const respostaDiv = document.createElement('div');
-                respostaDiv.className = 'kgn-message kgn-ai';
-                respostaDiv.setAttribute('role', 'article');
-                respostaDiv.setAttribute('aria-labelledby', respostaId);
-                respostaDiv.innerHTML = `
-                    <div id="${respostaId}" class="kgn-message-content">${resposta}</div>
-                    <div class="kgn-message-meta">
-                        <span class="kgn-time">${respostaTimeString}</span>
-                        <span class="kgn-ai-label">Kognitiva</span>
-                    </div>
-                `;
-                
-                chatMessages.appendChild(respostaDiv);
-                document.getElementById('feedbackContainer').hidden = false;
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            }, 1000 + Math.random() * 2000);
+            // Chamada real à IA
+            const contexto = JSON.parse(localStorage.getItem('contexto') || '{}');
+            window.executarIA(mensagem, contexto)
+                .then(resposta => {
+                    if (typingIndicator.parentNode) {
+                        typingIndicator.remove();
+                    }
+                    
+                    window.renderMensagemIA({
+                        ...resposta, 
+                        id: 'msg-' + Date.now(),
+                        time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+                    });
+                    
+                    if (resposta.contexto) {
+                        window.mergeContexto(resposta.contexto);
+                    }
+                    
+                    document.getElementById('feedbackContainer').hidden = false;
+                })
+                .catch(() => {
+                    if (typingIndicator.parentNode) {
+                        typingIndicator.remove();
+                    }
+                    
+                    window.renderMensagemIA({
+                        conteudo: "Desculpe, estou com dificuldades técnicas.",
+                        score: 0,
+                        id: 'msg-' + Date.now(),
+                        time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+                    });
+                });
+        };
+
+        window.generateMessageId = function() {
+            return 'msg-' + Date.now();
         };
     </script>
 
     <script>
-        // Configuração inicial quando o DOM estiver carregado
+        // Configuração inicial
         document.addEventListener('DOMContentLoaded', function() {
-            // Mobile menu toggle
+            // Menu mobile
             const menuButton = document.getElementById('menuButton');
             const sidebar = document.querySelector('.kgn-sidebar');
             const closeButton = document.querySelector('.kgn-close-btn');
@@ -464,7 +467,7 @@
                 });
             }
 
-            // LGPD consent
+            // LGPD
             const lgpdAceitarBtn = document.getElementById('lgpdAceitar');
             const lgpdAviso = document.getElementById('lgpdAviso');
             
@@ -479,7 +482,7 @@
                 }
             }
 
-            // Event listeners para envio de mensagens
+            // Eventos de envio
             const inputMensagem = document.getElementById('inputMensagem');
             const botaoEnviar = document.getElementById('botaoEnviar');
             
@@ -496,10 +499,25 @@
                 });
             }
         });
+
+        // Inicialização completa
+        window.onload = function() {
+            // Verifica reaproveitamento de sessão
+            if (typeof window.verificarReaproveitamentoSessao === 'function') {
+                window.verificarReaproveitamentoSessao();
+            }
+            
+            // Inicializa o chat
+            if (typeof window.initChat === 'function') {
+                window.initChat();
+            } else {
+                console.warn('[Kognitiva] Função initChat não disponível. Chat básico inicializado.');
+            }
+        };
     </script>
 
     <script data-ai-validation="inline">
-        // Validação de elementos obrigatórios (F02)
+        // Validação de elementos
         document.addEventListener('DOMContentLoaded', () => {
             const required = ['sidebarClientes', 'chatMessages', 'inputMensagem', 'botaoEnviar', 'lgpdAviso', 'diagnosticoFinal', 'diagnosticoConteudo', 'feedbackContainer'];
             const missing = required.filter(id => !document.getElementById(id));
@@ -513,7 +531,7 @@
     </script>
 
     <script>
-        // Filtro de console e tratamento de erros (F03 e F05)
+        // Filtro de console
         (function() {
             const originalConsole = {
                 log: console.log,
