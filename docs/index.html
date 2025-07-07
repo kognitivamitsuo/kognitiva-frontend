@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR" data-framework-version="5.0" data-framework-blocks="B00-B19" data-ai-status="valid">
+<html lang="pt-BR" data-framework-version="3.6" data-framework-blocks="B00-B19" data-ai-status="valid">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -294,6 +294,8 @@
     </style>
 </head>
 <body>
+    <input type="hidden" id="tokenSessao" />
+    
     <div data-ai-fallback-system>
         <template data-fallback="js-disabled">Seu navegador não suporta JavaScript. Algumas funcionalidades podem não funcionar corretamente.</template>
         <template data-fallback="css-disabled">Estilos desativados. Ative o CSS para melhor visualização.</template>
@@ -442,6 +444,27 @@
                 });
         };
 
+        // Implementação mínima de renderMensagemIA se não existir
+        window.renderMensagemIA = window.renderMensagemIA || function(data) {
+            const chatMessages = document.getElementById('chatMessages');
+            if (!chatMessages) return;
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'kgn-message kgn-ai';
+            messageDiv.setAttribute('role', 'article');
+            messageDiv.setAttribute('aria-labelledby', data.id);
+            messageDiv.innerHTML = `
+                <div id="${data.id}" class="kgn-message-content">${data.conteudo}</div>
+                <div class="kgn-message-meta">
+                    <span class="kgn-time">${data.time}</span>
+                    <span class="kgn-ai-label">Kognitiva</span>
+                </div>
+            `;
+            
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        };
+
         window.generateMessageId = function() {
             return 'msg-' + Date.now();
         };
@@ -503,8 +526,12 @@
         // Inicialização completa
         window.onload = function() {
             // Verifica reaproveitamento de sessão
-            if (typeof window.verificarReaproveitamentoSessao === 'function') {
-                window.verificarReaproveitamentoSessao();
+            const tokenSessao = localStorage.getItem("kgn_jwt");
+            const contexto = JSON.parse(localStorage.getItem("contexto") || "{}");
+            const cliente_nome = contexto?.cliente_nome || null;
+
+            if (typeof window.verificarReaproveitamentoSessao === "function" && tokenSessao && cliente_nome) {
+                window.verificarReaproveitamentoSessao(tokenSessao, cliente_nome);
             }
             
             // Inicializa o chat
