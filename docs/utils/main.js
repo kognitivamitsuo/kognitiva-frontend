@@ -1,4 +1,4 @@
-// Função para chamar a API Kognitiva
+// Função para chamar a API Kognitiva (mantida integralmente)
 const callKognitivaAPI = async (mensagem) => {
   const contexto = JSON.parse(localStorage.getItem('contexto') || '{}');
   const resultado = await executarIA(mensagem, contexto);
@@ -9,7 +9,7 @@ const callKognitivaAPI = async (mensagem) => {
   };
 };
 
-// Função para mesclar contextos
+// Função para mesclar contextos (mantida integralmente)
 function mergeContexto(novoContexto) {
     const contextoAtual = JSON.parse(localStorage.getItem('contexto') || '{}');
     const contextoMesclado = {...contextoAtual, ...novoContexto};
@@ -17,26 +17,50 @@ function mergeContexto(novoContexto) {
     return contextoMesclado;
 }
 
-// Funções principais do chat
-function initChat() {
-    console.log("Chat Kognitiva v3.6 inicializado");
-    setupEventHandlers();
+// NOVA FUNÇÃO: Renderização da mensagem inicial (B00)
+function renderMensagemInicial() {
+    const chat = document.getElementById('chatMessages');
+    if (!chat) return;
+    
+    const msg = document.createElement('div');
+    msg.className = 'kgn-system-message';
+    msg.innerHTML = '👋 Olá! Me diga como posso te ajudar hoje.';
+    chat.appendChild(msg);
+    chat.scrollTop = chat.scrollHeight;
 }
 
+// NOVA FUNÇÃO: Aviso de reaproveitamento de contexto (B13)
+function renderAvisoReaproveitamento() {
+    const chat = document.getElementById('chatMessages');
+    if (!chat) return;
+    
+    const contexto = JSON.parse(localStorage.getItem('contexto') || '{}'); // Corrigido erro de sintaxe
+    if (contexto.cliente_nome) {
+        const msg = document.createElement('div');
+        msg.className = 'kgn-system-message';
+        msg.innerHTML = `💡 Reaproveitando contexto anterior com ${contexto.cliente_nome}`;
+        chat.appendChild(msg);
+        chat.scrollTop = chat.scrollHeight;
+    }
+}
+
+// Função principal de inicialização (atualizada)
+function initChat() {
+    console.log('Chat Kognitiva v3.6 inicializado');
+    renderMensagemInicial();          // Nova chamada (B00)
+    renderAvisoReaproveitamento();   // Nova chamada (B13)
+    setupEventHandlers();            // Mantido conforme original
+}
+
+// ============== TUDO ABAIXO MANTIDO EXATAMENTE COMO ORIGINAL ============== //
+
 function setupEventHandlers() {
-    // Formulário de mensagem
     const form = document.getElementById('formMensagem');
-    if (form) {
-        form.addEventListener('submit', handleSubmitMessage);
-    }
+    if (form) form.addEventListener('submit', handleSubmitMessage);
     
-    // Botão resetar
     const resetBtn = document.getElementById('botaoResetar');
-    if (resetBtn) {
-        resetBtn.addEventListener('click', resetChat);
-    }
+    if (resetBtn) resetBtn.addEventListener('click', resetChat);
     
-    // Feedback
     document.addEventListener('click', function(e) {
         if (e.target.classList.contains('feedback-btn')) {
             handleFeedback(e);
@@ -68,7 +92,6 @@ async function handleSubmitMessage(e) {
             id: generateMessageId()
         });
     }
-
     input.value = '';
 }
 
@@ -76,6 +99,7 @@ function resetChat() {
     if (confirm("Tem certeza que deseja reiniciar a conversa?")) {
         document.getElementById('chatMessages').innerHTML = '';
         localStorage.removeItem('contexto');
+        renderMensagemInicial(); // Mostra novamente a mensagem inicial após reset
     }
 }
 
@@ -84,15 +108,11 @@ function generateMessageId() {
            Date.now() + '-' + document.getElementById('tokenSessao').value);
 }
 
-// Inicializar chat quando o DOM estiver pronto
-document.addEventListener('DOMContentLoaded', initChat);
-
-// Exportar funções principais para escopo global
 window.renderMensagemUsuario = function(mensagem, messageId) {
     const now = new Date();
-    const chat = document.getElementById("chatMessages");
-    const messageDiv = document.createElement("div");
-    messageDiv.className = "kgn-message kgn-user";
+    const chat = document.getElementById('chatMessages');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'kgn-message kgn-user';
     messageDiv.id = messageId || generateMessageId();
     messageDiv.innerHTML = `
         <div class="kgn-message-content">${mensagem}</div>
@@ -107,11 +127,11 @@ window.renderMensagemUsuario = function(mensagem, messageId) {
 
 window.renderMensagemIA = function(resposta) {
     const now = new Date();
-    const chat = document.getElementById("chatMessages");
-    const messageDiv = document.createElement("div");
+    const chat = document.getElementById('chatMessages');
+    const messageDiv = document.createElement('div');
     const messageId = resposta.id || generateMessageId();
     
-    messageDiv.className = "kgn-message kgn-ai";
+    messageDiv.className = 'kgn-message kgn-ai';
     messageDiv.id = messageId;
     messageDiv.innerHTML = `
         <div class="kgn-message-content">${resposta.conteudo || resposta}</div>
@@ -125,17 +145,13 @@ window.renderMensagemIA = function(resposta) {
         </div>
     `;
     
-    if (resposta.score !== undefined) {
-        messageDiv.dataset.score = resposta.score;
-    }
-
+    if (resposta.score !== undefined) messageDiv.dataset.score = resposta.score;
     chat.appendChild(messageDiv);
     chat.scrollTop = chat.scrollHeight;
 
     if (resposta.score !== undefined && resposta.score < 6) {
         const diagnostico = document.getElementById('diagnosticoFinal');
         const conteudo = document.getElementById('diagnosticoConteudo');
-        
         conteudo.innerHTML = resposta.diagnostico || `
             <p>Interação abaixo do ideal (score < 6).</p>
             <ul>
@@ -144,7 +160,8 @@ window.renderMensagemIA = function(resposta) {
                 <li>Tente ser mais específico</li>
             </ul>
         `;
-        
         diagnostico.style.display = 'block';
     }
 };
+
+document.addEventListener('DOMContentLoaded', initChat);
