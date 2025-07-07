@@ -1,5 +1,8 @@
+// utils/execControl.js
+// Controle unificado de execução da IA – Kognitiva v3.6
+// ✅ Compatível com backend: https://sync.kognitiva.app/executar
+// ✅ Blocos: B10 (superprompt), B11 (execução final com fallback)
 
-// Controle de execução da IA (B10–B11)
 export async function executarIA(mensagem, contexto = {}) {
   const payload = {
     mensagem_usuario: mensagem,
@@ -8,7 +11,7 @@ export async function executarIA(mensagem, contexto = {}) {
     framework_version: '3.4-finalUX'
   };
 
-  const token = localStorage.getItem('jwt_token');
+  const token = localStorage.getItem('kgn_jwt');
   const headers = {
     'Content-Type': 'application/json'
   };
@@ -29,11 +32,13 @@ export async function executarIA(mensagem, contexto = {}) {
     }
 
     const json = await resposta.json();
+
     return {
       status: 'ok',
       resposta: json.resposta,
       modelo_utilizado: json.modelo_utilizado,
-      score_resposta: json.score_resposta
+      score_resposta: json.score_resposta,
+      fallback: json.fallback || false
     };
   } catch (erro) {
     console.error('[execControl] Fallback ativado:', erro);
@@ -41,7 +46,9 @@ export async function executarIA(mensagem, contexto = {}) {
       status: 'erro',
       resposta: '⚠️ Erro ao processar sua solicitação. Tente novamente mais tarde.',
       modelo_utilizado: 'fallback',
-      score_resposta: 0
+      score_resposta: 0,
+      fallback: true
     };
   }
 }
+
