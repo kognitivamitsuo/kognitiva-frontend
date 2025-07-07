@@ -1,5 +1,5 @@
-// utils/execControl.js
-// Controle unificado de execução da IA – compatível com navegador puro (sem export)
+// utils/execControl.js – Controle unificado de execução da IA
+// Compatível com navegador puro (sem export) – v3.6 corrigido
 
 window.executarIA = async function(mensagem, contexto = {}) {
   const payload = {
@@ -9,13 +9,29 @@ window.executarIA = async function(mensagem, contexto = {}) {
     framework_version: '3.4-finalUX'
   };
 
-  const token = localStorage.getItem('kgn_jwt');
+  // Reforço: tenta obter token direto do campo hidden se não estiver no localStorage
+  let token = localStorage.getItem('kgn_jwt');
+
+  if (!token) {
+    const tokenInput = document.getElementById('tokenSessao');
+    if (tokenInput && tokenInput.value) {
+      token = tokenInput.value;
+      // Sincroniza com o localStorage para execuções futuras
+      localStorage.setItem('kgn_jwt', token);
+    }
+  }
+
   const headers = {
     'Content-Type': 'application/json'
   };
 
   if (token) {
     headers['Authorization'] = `Bearer ${token}`;
+    // Atualiza o campo hidden visual para debug e fallback
+    const tokenInputDOM = document.getElementById('tokenSessao');
+    if (tokenInputDOM) {
+      tokenInputDOM.value = token;
+    }
   }
 
   try {
@@ -38,6 +54,7 @@ window.executarIA = async function(mensagem, contexto = {}) {
       score_resposta: json.score_resposta,
       fallback: json.fallback || false
     };
+
   } catch (erro) {
     console.error('[execControl] Fallback ativado:', erro);
     return {
@@ -49,5 +66,6 @@ window.executarIA = async function(mensagem, contexto = {}) {
     };
   }
 };
+
 
 
