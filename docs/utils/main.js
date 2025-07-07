@@ -20,12 +20,6 @@ function mergeContexto(novoContexto) {
 // Funções principais do chat
 function initChat() {
     console.log("Chat Kognitiva v3.6 inicializado");
-    
-    if (typeof callKognitivaAPI === 'undefined') {
-        console.error("Função callKognitivaAPI não encontrada");
-        return;
-    }
-    
     setupEventHandlers();
 }
 
