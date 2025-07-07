@@ -401,7 +401,84 @@
     </div>
 
     <script>
-        // Wait for DOM to be fully loaded
+        // Função global para envio de mensagens (corrigido o escopo)
+        window.handleSubmitMessage = function() {
+            const inputMensagem = document.getElementById('inputMensagem');
+            const chatMessages = document.getElementById('chatMessages');
+            const mensagem = inputMensagem?.value.trim();
+            
+            if (!mensagem) return;
+            
+            // Adiciona mensagem do usuário
+            const messageId = 'msg-' + Date.now();
+            const timeString = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'kgn-message kgn-user';
+            messageDiv.setAttribute('role', 'article');
+            messageDiv.setAttribute('aria-labelledby', messageId);
+            messageDiv.innerHTML = `
+                <div id="${messageId}" class="kgn-message-content">${mensagem}</div>
+                <div class="kgn-message-meta">
+                    <span class="kgn-time">${timeString}</span>
+                    <span class="kgn-ai-label">Você</span>
+                </div>
+            `;
+            
+            chatMessages?.appendChild(messageDiv);
+            inputMensagem.value = '';
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            // Mostra indicador de digitação
+            const typingIndicator = document.createElement('div');
+            typingIndicator.className = 'kgn-typing-indicator';
+            typingIndicator.innerHTML = `
+                <div class="kgn-dot"></div>
+                <div class="kgn-dot"></div>
+                <div class="kgn-dot"></div>
+            `;
+            chatMessages.appendChild(typingIndicator);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            // Simulação de resposta da IA
+            setTimeout(() => {
+                if (typingIndicator.parentNode) {
+                    typingIndicator.remove();
+                }
+                
+                const respostas = [
+                    "Entendi sua solicitação. Vou ajudar com isso.",
+                    "Ótima pergunta! Aqui está a informação que você precisa...",
+                    "Com base em meus registros, posso informar que...",
+                    "Posso sugerir algumas opções para resolver isso...",
+                    "Obrigado por compartilhar. Vamos analisar seu caso."
+                ];
+                const resposta = respostas[Math.floor(Math.random() * respostas.length)];
+                
+                const respostaId = 'msg-' + Date.now();
+                const respostaTimeString = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                
+                const respostaDiv = document.createElement('div');
+                respostaDiv.className = 'kgn-message kgn-ai';
+                respostaDiv.setAttribute('role', 'article');
+                respostaDiv.setAttribute('aria-labelledby', respostaId);
+                respostaDiv.innerHTML = `
+                    <div id="${respostaId}" class="kgn-message-content">${resposta}</div>
+                    <div class="kgn-message-meta">
+                        <span class="kgn-time">${respostaTimeString}</span>
+                        <span class="kgn-ai-label">Kognitiva</span>
+                    </div>
+                `;
+                
+                chatMessages.appendChild(respostaDiv);
+                document.getElementById('feedbackContainer').hidden = false;
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }, 1000 + Math.random() * 2000);
+        };
+    </script>
+
+    <script>
+        // Configuração inicial quando o DOM estiver carregado
         document.addEventListener('DOMContentLoaded', function() {
             // Mobile menu toggle
             const menuButton = document.getElementById('menuButton');
@@ -436,85 +513,10 @@
                 }
             }
 
-            // Configuração do sistema de chat
+            // Event listeners para envio de mensagens
             const inputMensagem = document.getElementById('inputMensagem');
             const botaoEnviar = document.getElementById('botaoEnviar');
-            const chatMessages = document.getElementById('chatMessages');
-
-            // Função para adicionar mensagem ao chat
-            function addMessage(content, isUser = false) {
-                const messageId = 'msg-' + Date.now();
-                const timeString = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                
-                const messageDiv = document.createElement('div');
-                messageDiv.className = `kgn-message ${isUser ? 'kgn-user' : 'kgn-ai'}`;
-                messageDiv.setAttribute('role', 'article');
-                messageDiv.setAttribute('aria-labelledby', messageId);
-                
-                messageDiv.innerHTML = `
-                    <div id="${messageId}" class="kgn-message-content">${content}</div>
-                    <div class="kgn-message-meta">
-                        <span class="kgn-time">${timeString}</span>
-                        <span class="kgn-ai-label">${isUser ? 'Você' : 'Kognitiva'}</span>
-                    </div>
-                `;
-                
-                chatMessages.appendChild(messageDiv);
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            }
-
-            // Simulação de resposta da IA
-            function executarIA(mensagem) {
-                // Simulação de tempo de resposta
-                setTimeout(() => {
-                    const respostas = [
-                        "Entendi sua solicitação. Vou ajudar com isso.",
-                        "Ótima pergunta! Aqui está a informação que você precisa...",
-                        "Com base em meus registros, posso informar que...",
-                        "Posso sugerir algumas opções para resolver isso...",
-                        "Obrigado por compartilhar. Vamos analisar seu caso."
-                    ];
-                    const resposta = respostas[Math.floor(Math.random() * respostas.length)];
-                    addMessage(resposta, false);
-                    
-                    // Mostrar feedback após resposta
-                    const feedback = document.getElementById('feedbackContainer');
-                    feedback.hidden = false;
-                }, 1000 + Math.random() * 2000);
-            }
-
-            // Função principal de envio
-            function handleSubmitMessage() {
-                const mensagem = inputMensagem.value.trim();
-                if (mensagem === '') return;
-                
-                // Adiciona mensagem do usuário
-                addMessage(mensagem, true);
-                inputMensagem.value = '';
-                
-                // Mostra indicador de digitação
-                const typingIndicator = document.createElement('div');
-                typingIndicator.className = 'kgn-typing-indicator';
-                typingIndicator.innerHTML = `
-                    <div class="kgn-dot"></div>
-                    <div class="kgn-dot"></div>
-                    <div class="kgn-dot"></div>
-                `;
-                chatMessages.appendChild(typingIndicator);
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-                
-                // Chama a IA (simulado)
-                executarIA(mensagem);
-                
-                // Remove o indicador após algum tempo
-                setTimeout(() => {
-                    if (typingIndicator.parentNode) {
-                        typingIndicator.remove();
-                    }
-                }, 3000);
-            }
-
-            // Event listeners
+            
             if (botaoEnviar) {
                 botaoEnviar.addEventListener('click', handleSubmitMessage);
             }
