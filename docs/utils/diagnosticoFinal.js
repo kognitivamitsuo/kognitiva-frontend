@@ -1,6 +1,7 @@
+// utils/diagnosticoFinal.js
+// Diagnóstico final (B16) – Compatível com navegador (sem export)
 
-// Diagnóstico final (B16)
-export function renderResumoFinal(score, tempoResposta) {
+window.renderResumoFinal = function(score, tempoResposta) {
   const box = document.getElementById('diagnosticoFinal');
   if (!box) return;
 
@@ -13,12 +14,12 @@ export function renderResumoFinal(score, tempoResposta) {
     </button>
   `;
   box.style.display = 'block';
-}
+};
 
 // Diagnóstico retroativo automático (se sessão com score baixo ou feedback 👎)
 document.addEventListener('DOMContentLoaded', () => {
   const historico = JSON.parse(localStorage.getItem('kognitiva_diagnostico') || '{}');
   if (historico.score_resposta !== undefined && historico.score_resposta < 6) {
-    renderResumoFinal(historico.score_resposta, historico.tempo_resposta);
+    window.renderResumoFinal(historico.score_resposta, historico.tempo_resposta);
   }
 });
