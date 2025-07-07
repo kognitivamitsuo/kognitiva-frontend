@@ -1,9 +1,7 @@
 // utils/execControl.js
-// Controle unificado de execução da IA – Kognitiva v3.6
-// ✅ Compatível com backend: https://sync.kognitiva.app/executar
-// ✅ Blocos: B10 (superprompt), B11 (execução final com fallback)
+// Controle unificado de execução da IA – compatível com navegador puro (sem export)
 
-export async function executarIA(mensagem, contexto = {}) {
+window.executarIA = async function(mensagem, contexto = {}) {
   const payload = {
     mensagem_usuario: mensagem,
     contexto: contexto,
@@ -50,5 +48,6 @@ export async function executarIA(mensagem, contexto = {}) {
       fallback: true
     };
   }
-}
+};
+
 
