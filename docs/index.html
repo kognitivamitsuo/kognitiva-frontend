@@ -5,6 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="color-scheme" content="dark">
     <meta name="generator" content="AI-HTML-100%">
+    
+    <!-- Otimização de conexões com domínios Wix -->
+    <link rel="preconnect" href="https://static.parastorage.com" crossorigin>
+    <link rel="preconnect" href="https://static.wixstatic.com" crossorigin>
+    <link rel="preconnect" href="https://siteassets.parastorage.com" crossorigin>
+    
+    <!-- Preload não bloqueante para recursos Wix que podem falhar -->
+    <link rel="preload" href="https://static.parastorage.com/services/form-app/1.1908.0/FormViewerWidgetNoCss.bundle.min.js" 
+          as="script" crossorigin="anonymous" 
+          onload="this.onload=null;this.rel='preload-success'" 
+          onerror="this.rel='preload-fail'">
+    
     <title>Chat Kognitiva v5.0</title>
     <style>
         :root {
@@ -435,6 +447,55 @@
                 document.documentElement.setAttribute('data-ai-status', 'valid');
             }
         });
+    </script>
+
+    <!-- Tratamento de erros externos e monitoramento de preload -->
+    <script>
+        // Tratamento de falhas em scripts externos (Wix/Parastorage)
+        window.addEventListener('error', function(e) {
+            // Suprime erros de recursos Wix/Parastorage
+            if (e.target.tagName === 'SCRIPT' && 
+                (e.target.src?.includes('parastorage') || 
+                 e.target.src?.includes('wixstatic') || 
+                 e.target.src?.includes('sentry'))) {
+                console.warn('⚠️ Recurso externo falhou ao carregar. Nenhum impacto na IA.');
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            }
+            
+            // Suprime erros 429 (Too Many Requests)
+            if (e.message && e.message.includes('429')) {
+                console.warn('⚠️ Limite de requisições excedido (429). Operação não afetada.');
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            }
+        });
+
+        // Monitor de pré-carregamento
+        document.addEventListener('preload-success', function(e) {
+            console.debug('✅ Preload bem-sucedido:', e.target.href);
+        });
+        
+        document.addEventListener('preload-fail', function(e) {
+            console.debug('⚠️ Falha no preload:', e.target.href);
+        });
+
+        // Tratamento para erros do Sentry
+        if (window.Sentry) {
+            window.Sentry.init({
+                beforeSend(event) {
+                    // Filtra erros de recursos externos
+                    if (event.exception?.values?.[0]?.stacktrace?.frames?.some(
+                        frame => frame.filename?.includes('parastorage') || 
+                                frame.filename?.includes('wixstatic'))) {
+                        return null;
+                    }
+                    return event;
+                }
+            });
+        }
     </script>
 </body>
 </html>
