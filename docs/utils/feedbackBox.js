@@ -1,6 +1,7 @@
-// feedbackBox.js – Bloco B17 (Kognitiva v3.6)
+// utils/feedbackBox.js
+// Bloco B17 – Envio de feedback pelo usuário (versão navegador puro)
 
-export function enviarFeedback(tipo, idMensagem) {
+window.enviarFeedback = function(tipo, idMensagem) {
   const token = localStorage.getItem('kgn_jwt');
   if (!token || !idMensagem) return;
 
@@ -25,14 +26,15 @@ export function enviarFeedback(tipo, idMensagem) {
     return r.json();
   })
   .then(() => {
-    const botao = document.querySelectorAll(`[onclick*="${idMensagem}"]`);
-    botao.forEach(btn => {
+    const botoes = document.querySelectorAll(`[data-message-id="${idMensagem}"]`);
+    botoes.forEach(btn => {
       btn.disabled = true;
       btn.style.opacity = 0.5;
     });
-    console.log("Feedback registrado com sucesso.");
+    console.log("✅ Feedback registrado com sucesso.");
   })
   .catch(e => {
-    console.error("Falha no envio do feedback:", e);
+    console.error("❌ Falha no envio do feedback:", e);
   });
-}
+};
+
