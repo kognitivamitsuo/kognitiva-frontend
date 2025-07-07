@@ -334,11 +334,17 @@
                 </div>
             </div>
 
-            <div class="kgn-input-area" data-framework-block="B07-B09"
-                 data-ai-component="input-area" data-validation-rules="required-structure">
-                <textarea id="inputMensagem" placeholder="Digite sua mensagem..." aria-label="Digite sua mensagem"></textarea>
-                <button id="botaoEnviar" data-ai-component="send-button">Enviar</button>
-            </div>
+            <!-- Formulário para envio de mensagens (obrigatório) -->
+            <form id="formMensagem" style="display: contents;">
+                <div class="kgn-input-area" data-framework-block="B07-B09"
+                     data-ai-component="input-area" data-validation-rules="required-structure">
+                    <textarea id="inputMensagem" placeholder="Digite sua mensagem..." aria-label="Digite sua mensagem"></textarea>
+                    <button id="botaoEnviar" data-ai-component="send-button">Enviar</button>
+                </div>
+            </form>
+
+            <!-- Botão de resetar sessão -->
+            <button id="botaoResetar" hidden>Resetar Sessão</button>
         </main>
 
         <div class="kgn-diagnostic" id="diagnosticoFinal" data-framework-block="B16" role="alertdialog" aria-modal="true" hidden
@@ -370,6 +376,16 @@
     <script src="https://kognitivamitsuo.github.io/kognitiva-frontend/utils/feedbackBox.js"></script>
     <script src="https://kognitivamitsuo.github.io/kognitiva-frontend/utils/diagnosticoFinal.js"></script>
 
+    <!-- Script de debug visual -->
+    <script>
+        const token = localStorage.getItem("kgn_jwt");
+        if (token) {
+            document.getElementById("tokenSessao").value = token;
+        } else {
+            console.warn("⚠️ Token JWT não encontrado no localStorage");
+        }
+    </script>
+
     <script>
         // Funções globais para integração com IA
         window.handleSubmitMessage = function() {
@@ -378,6 +394,13 @@
             const mensagem = inputMensagem?.value.trim();
             
             if (!mensagem) return;
+            
+            // Verifica token antes de enviar
+            const token = localStorage.getItem("kgn_jwt");
+            if (!token) {
+                console.error("Token JWT ausente - 401 Unauthorized");
+                return;
+            }
             
             // Adiciona mensagem do usuário
             const messageId = 'msg-' + Date.now();
@@ -508,6 +531,14 @@
             // Eventos de envio
             const inputMensagem = document.getElementById('inputMensagem');
             const botaoEnviar = document.getElementById('botaoEnviar');
+            const formMensagem = document.getElementById('formMensagem');
+            
+            if (formMensagem) {
+                formMensagem.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    handleSubmitMessage();
+                });
+            }
             
             if (botaoEnviar) {
                 botaoEnviar.addEventListener('click', handleSubmitMessage);
@@ -519,6 +550,16 @@
                         e.preventDefault();
                         handleSubmitMessage();
                     }
+                });
+            }
+
+            // Botão resetar sessão
+            const botaoResetar = document.getElementById('botaoResetar');
+            if (botaoResetar) {
+                botaoResetar.addEventListener('click', function() {
+                    localStorage.removeItem('kgn_jwt');
+                    localStorage.removeItem('contexto');
+                    window.location.reload();
                 });
             }
         });
@@ -534,6 +575,12 @@
                 window.verificarReaproveitamentoSessao(tokenSessao, cliente_nome);
             }
             
+            // Mostra botão resetar se tiver token
+            const botaoResetar = document.getElementById('botaoResetar');
+            if (botaoResetar && tokenSessao) {
+                botaoResetar.hidden = false;
+            }
+            
             // Inicializa o chat
             if (typeof window.initChat === 'function') {
                 window.initChat();
@@ -546,7 +593,7 @@
     <script data-ai-validation="inline">
         // Validação de elementos
         document.addEventListener('DOMContentLoaded', () => {
-            const required = ['sidebarClientes', 'chatMessages', 'inputMensagem', 'botaoEnviar', 'lgpdAviso', 'diagnosticoFinal', 'diagnosticoConteudo', 'feedbackContainer'];
+            const required = ['sidebarClientes', 'chatMessages', 'inputMensagem', 'botaoEnviar', 'lgpdAviso', 'diagnosticoFinal', 'diagnosticoConteudo', 'feedbackContainer', 'formMensagem', 'botaoResetar'];
             const missing = required.filter(id => !document.getElementById(id));
             if (missing.length) {
                 document.documentElement.setAttribute('data-ai-error', 'missing-elements');
