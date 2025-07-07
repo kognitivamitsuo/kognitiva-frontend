@@ -1,4 +1,3 @@
-
 :root {
   --primary-color: #2563eb;
   --background-color: #343541;
@@ -20,6 +19,28 @@ body {
   flex-direction: row;
 }
 
+/* ============== NOVOS ESTILOS ADICIONADOS ============== */
+.kgn-system-message {
+  background-color: #1e3a8a;
+  color: #ffffff;
+  font-weight: 500;
+  padding: 10px 16px;
+  margin: 12px auto;
+  max-width: 80%;
+  border-radius: 12px;
+  text-align: center;
+  font-family: 'Segoe UI', sans-serif;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+/* ============== FIM DOS NOVOS ESTILOS ============== */
+
+/* ============== ESTILOS EXISTENTES (MANTIDOS INTACTOS) ============== */
 .sidebar {
   width: 240px;
   background-color: #202123;
@@ -162,3 +183,4 @@ body {
     display: none;
   }
 }
+/* ============== FIM DOS ESTILOS EXISTENTES ============== */
