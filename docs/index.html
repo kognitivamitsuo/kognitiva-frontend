@@ -1,41 +1,24 @@
 <!DOCTYPE html>
-<html lang="pt-BR" data-framework-version=""3.4-finalUX"" data-framework-blocks="B00-B19" data-ai-status="valid">
+<html lang="pt-BR" data-framework-version="5.0" data-framework-blocks="B00-B19" data-ai-status="valid">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="color-scheme" content="dark">
     <meta name="generator" content="AI-HTML-100%">
     
-    <!-- Otimização de conexões com domínios Wix -->
+    <!-- Conexão otimizada -->
     <link rel="preconnect" href="https://static.parastorage.com" crossorigin>
-    <link rel="preconnect" href="https://static.wixstatic.com" crossorigin>
-    <link rel="preconnect" href="https://siteassets.parastorage.com" crossorigin>
-    
-    <!-- Preload não bloqueante para recursos Wix que podem falhar -->
-    <link rel="preload" 
-          href="https://static.parastorage.com/services/form-app/1.1908.0/FormViewerWidgetNoCss.bundle.min.js"
-          as="script" crossorigin="anonymous"
-          data-preload-type="optional-wix-resource"
-          onload="this.onload=null;this.dataset.loaded='true'"
-          onerror="this.dataset.loaded='false'">
     
     <title>Chat Kognitiva v5.0</title>
     <style>
         :root {
-            /* Cores primárias */
             --kgn-blue: #2563eb;
             --kgn-blue-dark: #1e40af;
-            
-            /* Fundos */
             --kgn-bg: #343541;
             --kgn-surface: #2a2c38;
             --kgn-sidebar: #202123;
-            
-            /* Texto */
             --kgn-text-primary: #f3f4f6; 
             --kgn-text-secondary: #d1d5db;
-            
-            /* Estados */
             --kgn-error: #ef4444;
             --kgn-success: #10b981;
         }
@@ -61,7 +44,6 @@
             width: 100%;
         }
 
-        /* Sidebar */
         .kgn-sidebar {
             background-color: var(--kgn-sidebar);
             padding: 1rem;
@@ -94,7 +76,6 @@
             outline: none;
         }
 
-        /* Main chat area */
         .kgn-main {
             display: flex;
             flex-direction: column;
@@ -125,7 +106,6 @@
             scroll-behavior: smooth;
         }
 
-        /* Message styles */
         .kgn-message {
             max-width: 80%;
             margin-bottom: 1.5rem;
@@ -155,7 +135,6 @@
             opacity: 0.8;
         }
 
-        /* Input area */
         .kgn-input-area {
             padding: 1rem;
             background-color: var(--kgn-surface);
@@ -194,7 +173,6 @@
             background-color: var(--kgn-blue-dark);
         }
 
-        /* Typing indicator */
         .kgn-typing-indicator {
             display: flex;
             gap: 0.5rem;
@@ -226,7 +204,6 @@
             30% { transform: translateY(-5px); }
         }
 
-        /* Feedback system */
         .kgn-feedback {
             position: fixed;
             bottom: 5rem;
@@ -260,7 +237,6 @@
             background-color: var(--kgn-bg);
         }
 
-        /* LGPD Banner */
         .kgn-lgpd {
             position: fixed;
             bottom: 1rem;
@@ -275,7 +251,6 @@
             box-shadow: 0 2px 10px rgba(0,0,0,0.2);
         }
 
-        /* Diagnostic panel */
         .kgn-diagnostic {
             position: fixed;
             top: 50%;
@@ -290,7 +265,6 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.3);
         }
 
-        /* Responsive adjustments */
         @media (max-width: 768px) {
             .kgn-app {
                 grid-template-columns: 1fr;
@@ -316,7 +290,6 @@
             }
         }
 
-        /* Accessibility focus styles */
         button:focus, [tabindex="0"]:focus {
             outline: 2px solid var(--kgn-blue);
             outline-offset: 2px;
@@ -339,7 +312,6 @@
                 <button class="kgn-close-btn" aria-label="Fechar sidebar">×</button>
             </div>
             <ul class="kgn-client-list" id="listaClientes" role="list">
-                <!-- Client list will be populated dynamically -->
                 <li role="listitem" tabindex="0">João Silva</li>
                 <li role="listitem" tabindex="0">Maria Santos</li>
                 <li role="listitem" tabindex="0">Carlos Oliveira</li>
@@ -348,16 +320,13 @@
 
         <!-- Main chat area -->
         <main class="kgn-main" data-ai-component="chat-main" data-validation-rules="required-structure">
-            <!-- Header -->
             <header class="kgn-chat-header">
                 <button class="kgn-menu-btn" id="menuButton" aria-label="Abrir menu">☰</button>
                 <h1>Chat Kognitiva</h1>
             </header>
 
-            <!-- Messages (B04-B06) -->
             <div class="kgn-messages" id="chatMessages" data-framework-block="B04-B06" role="log" aria-live="polite"
                  data-ai-component="message-container" data-validation-rules="required-aria required-id">
-                <!-- Messages will be inserted here -->
                 <div class="kgn-message kgn-ai" role="article" aria-labelledby="msg1">
                     <div id="msg1" class="kgn-message-content">
                         Olá! Sou o assistente virtual da Kognitiva. Como posso ajudar você hoje?
@@ -369,7 +338,6 @@
                 </div>
             </div>
 
-            <!-- Input area (B07-B09) -->
             <div class="kgn-input-area" data-framework-block="B07-B09"
                  data-ai-component="input-area" data-validation-rules="required-structure">
                 <textarea id="inputMensagem" placeholder="Digite sua mensagem..." aria-label="Digite sua mensagem"></textarea>
@@ -377,7 +345,6 @@
             </div>
         </main>
 
-        <!-- Floating components -->
         <div class="kgn-diagnostic" id="diagnosticoFinal" data-framework-block="B16" role="alertdialog" aria-modal="true" hidden
              data-ai-component="diagnostic-panel" data-validation-rules="required-aria required-id">
             <div id="diagnosticoConteudo" data-ai-component="diagnostic-content"></div>
@@ -401,7 +368,7 @@
     </div>
 
     <script>
-        // Função global para envio de mensagens (corrigido o escopo)
+        // Função global para envio de mensagens (F01 corrigido)
         window.handleSubmitMessage = function() {
             const inputMensagem = document.getElementById('inputMensagem');
             const chatMessages = document.getElementById('chatMessages');
@@ -507,7 +474,6 @@
                     lgpdAviso.style.display = 'none';
                 });
                 
-                // Check existing consent
                 if (localStorage.getItem('lgpd_consentimento') === 'true') {
                     lgpdAviso.style.display = 'none';
                 }
@@ -533,6 +499,7 @@
     </script>
 
     <script data-ai-validation="inline">
+        // Validação de elementos obrigatórios (F02)
         document.addEventListener('DOMContentLoaded', () => {
             const required = ['sidebarClientes', 'chatMessages', 'inputMensagem', 'botaoEnviar', 'lgpdAviso', 'diagnosticoFinal', 'diagnosticoConteudo', 'feedbackContainer'];
             const missing = required.filter(id => !document.getElementById(id));
@@ -545,30 +512,29 @@
         });
     </script>
 
-    <!-- Tratamento de erros externos e monitoramento de preload -->
     <script>
+        // Filtro de console e tratamento de erros (F03 e F05)
         (function() {
             const originalConsole = {
                 log: console.log,
                 warn: console.warn,
-                error: console.error,
-                info: console.info
+                error: console.error
             };
 
             const suppressedMessages = [
                 /preloaded using link preload but not used/,
                 /setting warmup data is not supported/,
                 /Running the code for the/,
-                /Successfully preconnected to/
+                /Successfully preconnected to/,
+                /Timeout occurred while waiting for access tokens/
             ];
 
-            ['log', 'warn', 'error', 'info'].forEach(method => {
+            ['log', 'warn', 'error'].forEach(method => {
                 console[method] = function() {
                     const message = arguments[0];
                     const shouldSuppress = suppressedMessages.some(pattern => 
                         typeof message === 'string' && pattern.test(message)
                     );
-                    if (method === 'info' && message && message.includes('preconnected to')) return;
                     if (!shouldSuppress) {
                         originalConsole[method].apply(console, arguments);
                     }
@@ -581,15 +547,6 @@
                     e.stopPropagation();
                     return false;
                 }
-            });
-
-            document.addEventListener('DOMContentLoaded', function() {
-                const preloads = document.querySelectorAll('[data-preload-type]');
-                preloads.forEach(el => {
-                    if (el.dataset.loaded === 'false') {
-                        originalConsole.warn('⚠️ Recurso opcional falhou no preload:', el.href);
-                    }
-                });
             });
         })();
     </script>
