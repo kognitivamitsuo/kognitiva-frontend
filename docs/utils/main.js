@@ -1,3 +1,4 @@
+
 // mainPage.js – Kognitiva v3.6 corrigido
 (function() {
     'use strict';
@@ -9,10 +10,9 @@
         setupEventHandlers();
     };
 
-        window.carregarContexto = window.carregarContexto || function() {
+    window.carregarContexto = window.carregarContexto || function() {
         return JSON.parse(localStorage.getItem('contexto') || '{}');
     };
-
 
     window.atualizarListaClientes = window.atualizarListaClientes || function(nome) {
         console.log(`Atualizando lista com cliente: ${nome}`);
@@ -104,3 +104,4 @@
     }
 
 })();
+
