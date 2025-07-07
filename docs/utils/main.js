@@ -1,3 +1,14 @@
+// Função para chamar a API Kognitiva
+const callKognitivaAPI = async (mensagem) => {
+  const contexto = JSON.parse(localStorage.getItem('contexto') || '{}');
+  const resultado = await executarIA(mensagem, contexto);
+  return {
+    conteudo: resultado.resposta,
+    score: resultado.score,
+    contexto: contexto
+  };
+};
+
 // Função para mesclar contextos
 function mergeContexto(novoContexto) {
     const contextoAtual = JSON.parse(localStorage.getItem('contexto') || '{}');
