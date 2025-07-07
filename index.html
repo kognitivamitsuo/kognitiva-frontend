@@ -1,246 +1,30 @@
 <!DOCTYPE html>
-<html lang="pt-BR" data-framework-version="3.6" data-framework-blocks="B00-B19">
-<head>
-    <!-- ... (head content remains exactly the same) ... -->
-</head>
-<body>
-    <!-- ... (all HTML structure remains exactly the same) ... -->
-
-    <!-- Scripts JS in correct order -->
-    <script src="./utils/contextService.js"></script>
-    <script src="./utils/execControl.js"></script>
-    <script src="./utils/reaproveitarSessao.js"></script>
-    <script src="./utils/diagnosticoFinal.js"></script>
-    <script src="./utils/feedbackBox.js"></script>
-    <script src="./utils/main.js"></script>
-    
-    <script>
-        // Wait for DOM to be fully loaded before attaching event listeners
-        document.addEventListener('DOMContentLoaded', function() {
-            // Fallback de JWT
-            if (!localStorage.getItem('kgn_jwt')) {
-                fetch("https://sync.kognitiva.app/proxy/token", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ projeto: "KOGNITIVA_2025" })
-                })
-                .then(res => res.json())
-                .then(data => localStorage.setItem('kgn_jwt', data.token))
-                .catch(() => localStorage.setItem('kgn_jwt', 'fallback_token_limited'));
-            }
-
-            // Token de sessão
-            const tokenSessaoEl = document.getElementById('tokenSessao');
-            if (tokenSessaoEl) {
-                tokenSessaoEl.value = 'sessao-' + Date.now();
-            }
-
-            // LGPD
-            function registrarLGPD() {
-                localStorage.setItem('lgpd_consentimento', 'true');
-                const lgpdAviso = document.getElementById('lgpdAviso');
-                if (lgpdAviso) lgpdAviso.style.display = 'none';
-            }
-            
-            const lgpdAceitarBtn = document.getElementById('lgpdAceitar');
-            if (lgpdAceitarBtn) {
-                lgpdAceitarBtn.addEventListener('click', registrarLGPD);
-            }
-
-            // Verificar consentimento LGPD
-            if (localStorage.getItem('lgpd_consentimento') === 'true') {
-                const lgpdAviso = document.getElementById('lgpdAviso');
-                if (lgpdAviso) lgpdAviso.style.display = 'none';
-            }
-
-            // Menu mobile
-            const menuButton = document.getElementById('menuButton');
-            if (menuButton) {
-                menuButton.addEventListener('click', function() {
-                    const sidebar = document.querySelector('.sidebar');
-                    if (sidebar) sidebar.classList.toggle('active');
-                });
-            }
-
-            // Verificação de elementos
-            const requiredElements = ['sidebarClientes', 'chatMessages', 'inputMensagem', 
-                                    'botaoEnviar', 'lgpdAviso', 'diagnosticoFinal', 
-                                    'botaoResetar'];
-            
-            const missing = requiredElements.filter(id => !document.getElementById(id));
-            if (missing.length) console.error("Elementos faltando:", missing);
-
-            // Função para gerar IDs únicos
-            function generateMessageId() {
-                const tokenEl = document.getElementById('tokenSessao');
-                const tokenValue = tokenEl ? tokenEl.value : Date.now();
-                return 'msg-' + (window.crypto?.randomUUID ? crypto.randomUUID() : 
-                       Date.now() + '-' + tokenValue);
-            }
-
-            // Funções de renderização (fallback)
-            if (typeof renderMensagemUsuario === 'undefined') {
-                window.renderMensagemUsuario = function(mensagem, messageId) {
-                    const chat = document.getElementById("chatMessages");
-                    if (!chat) return;
-                    
-                    const now = new Date();
-                    const messageDiv = document.createElement("div");
-                    messageDiv.className = "kgn-message kgn-user";
-                    messageDiv.id = messageId || generateMessageId();
-                    messageDiv.innerHTML = `
-                        <div class="kgn-message-content">${mensagem}</div>
-                        <div class="kgn-message-meta">
-                            <span class="kgn-time">${now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
-                            <span class="kgn-user-label">Você</span>
-                        </div>
-                    `;
-                    chat.appendChild(messageDiv);
-                    chat.scrollTop = chat.scrollHeight;
-                };
-            }
-
-            if (typeof renderMensagemIA === 'undefined') {
-                window.renderMensagemIA = function(resposta) {
-                    const chat = document.getElementById("chatMessages");
-                    if (!chat) return;
-                    
-                    const now = new Date();
-                    const messageDiv = document.createElement("div");
-                    const messageId = resposta.id || generateMessageId();
-                    messageDiv.className = "kgn-message kgn-ai";
-                    messageDiv.id = messageId;
-                    messageDiv.innerHTML = `
-                        <div class="kgn-message-content">${resposta.conteudo || resposta}</div>
-                        <div class="kgn-message-meta">
-                            <span class="kgn-time">${now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
-                            <span class="kgn-ai-label">Assistente</span>
-                        </div>
-                        <div class="feedback-box" data-framework-block="B17">
-                            <button class="feedback-btn" data-event="feedback" data-score="positivo" data-message-id="${messageDiv.id}">👍</button>
-                            <button class="feedback-btn" data-event="feedback" data-score="negativo" data-message-id="${messageDiv.id}">👎</button>
-                        </div>
-                    `;
-                    
-                    if (resposta.score !== undefined) {
-                        messageDiv.dataset.score = resposta.score;
-                    }
-
-                    chat.appendChild(messageDiv);
-                    chat.scrollTop = chat.scrollHeight;
-
-                    if (resposta.score !== undefined && resposta.score < 6) {
-                        const diagnostico = document.getElementById('diagnosticoFinal');
-                        const conteudo = document.getElementById('diagnosticoConteudo');
-                        
-                        if (diagnostico && conteudo) {
-                            conteudo.innerHTML = resposta.diagnostico || `
-                                <p>Interação abaixo do ideal (score < 6).</p>
-                                <ul>
-                                    <li>Considere reformular sua pergunta</li>
-                                    <li>Verifique se forneceu todos os detalhes necessários</li>
-                                    <li>Tente ser mais específico</li>
-                                </ul>
-                            `;
-                            diagnostico.style.display = 'block';
-                        }
-                    }
-                };
-            }
-
-            // Função de feedback aprimorada
-            async function handleFeedback(e) {
-                const tipo = e.target.dataset.score;
-                const messageDiv = e.target.closest('.kgn-message');
-                const messageId = messageDiv?.id || generateMessageId();
-                const token = localStorage.getItem('kgn_jwt');
-
-                const payload = {
-                    tipo_feedback: tipo,
-                    id_mensagem: messageId,
-                    token_sessao: document.getElementById('tokenSessao')?.value,
-                    origem: 'frontend',
-                    timestamp: new Date().toISOString()
-                };
-
-                try {
-                    const response = await fetch('https://sync.kognitiva.app/proxy/feedback', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${token}`
-                        },
-                        body: JSON.stringify(payload)
-                    });
-                    
-                    if (!response.ok) throw new Error('Status não OK');
-                    console.log(`Feedback ${tipo} registrado para ${messageId}`);
-                    
-                    // Visual feedback
-                    e.target.style.backgroundColor = tipo === 'positivo' ? '#10b98133' : '#ef444433';
-                } catch (error) {
-                    console.error("Erro ao enviar feedback:", error);
-                    alert("Não foi possível registrar seu feedback. Tente novamente.");
-                }
-            }
-
-            // Handler do formulário (fallback)
-            const formMensagem = document.getElementById('formMensagem');
-            if (formMensagem) {
-                formMensagem.addEventListener('submit', async function(e) {
-                    e.preventDefault();
-                    const input = document.getElementById('inputMensagem');
-                    if (!input) return;
-                    
-                    const mensagem = input.value.trim();
-                    if (!mensagem) return;
-
-                    const messageId = generateMessageId();
-                    renderMensagemUsuario(mensagem, messageId);
-                    
-                    try {
-                        if (typeof callKognitivaAPI === 'undefined') {
-                            throw new Error('API function not available');
-                        }
-                        
-                        const resposta = await callKognitivaAPI(mensagem);
-                        const respostaComId = {...resposta, id: generateMessageId()};
-                        renderMensagemIA(respostaComId);
-                        
-                        if (resposta.contexto) {
-                            const contextoAtual = JSON.parse(localStorage.getItem('contexto') || '{}');
-                            const contextoMesclado = {...contextoAtual, ...resposta.contexto};
-                            localStorage.setItem('contexto', JSON.stringify(contextoMesclado));
-                        }
-                    } catch (error) {
-                        console.error("Erro na chamada da API:", error);
-                        renderMensagemIA({
-                            conteudo: "Desculpe, estou com dificuldades técnicas. Tente novamente mais tarde.",
-                            score: 0,
-                            id: generateMessageId()
-                        });
-                    }
-
-                    input.value = '';
-                });
-            }
-
-            // Fechar diagnóstico
-            const fecharDiagnosticoBtn = document.getElementById('fecharDiagnostico');
-            if (fecharDiagnosticoBtn) {
-                fecharDiagnosticoBtn.addEventListener('click', function() {
-                    const diagnosticoFinal = document.getElementById('diagnosticoFinal');
-                    if (diagnosticoFinal) diagnosticoFinal.style.display = 'none';
-                });
-            }
-
-            // Event listener para feedback
-            document.addEventListener('click', function(e) {
-                if (e.target.classList.contains('feedback-btn')) {
-                    handleFeedback(e);
-                }
-            });
-        });
-    </script>
-</body>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="refresh" content="0; url=docs/">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirecionando para Kognitiva</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        background-color: #343541;
+        color: #f3f4f6;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        text-align: center;
+      }
+      a {
+        color: #3b82f6;
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>🔄 Redirecionando para o Chat da Kognitiva...</h1>
+    <p>Se não for redirecionado automaticamente, <a href="docs/">clique aqui</a>.</p>
+  </body>
 </html>
