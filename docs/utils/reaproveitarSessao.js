@@ -1,6 +1,9 @@
+// utils/reaproveitarSessao.js
+// ✅ Versão final compatível com navegador (sem export)
+
 const URL_API = "https://sync.kognitiva.app";
 
-async function verificarReaproveitamentoSessao(tokenSessao, cliente_nome) {
+window.verificarReaproveitamentoSessao = async function(tokenSessao, cliente_nome) {
   try {
     const resposta = await fetch(`${URL_API}/proxy/cache_superprompt?cliente_nome=${encodeURIComponent(cliente_nome)}`, {
       method: "GET",
@@ -19,7 +22,7 @@ async function verificarReaproveitamentoSessao(tokenSessao, cliente_nome) {
         alerta.className = "message ai";
         alerta.innerText = `💡 Reaproveitando contexto anterior com ${cliente_nome}`;
         chat.appendChild(alerta);
-        return dados.superprompt; // Reaproveitamento real
+        return dados.superprompt;
       }
     } else {
       console.warn("⚠️ Contexto anterior não encontrado.");
@@ -29,6 +32,5 @@ async function verificarReaproveitamentoSessao(tokenSessao, cliente_nome) {
   }
 
   return null;
-}
+};
 
-export { verificarReaproveitamentoSessao };
