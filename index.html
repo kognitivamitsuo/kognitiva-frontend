@@ -1,58 +1,180 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kognitiva - Chat IA</title>
-    <link rel="stylesheet" href="style.css"> <!-- Referência ao arquivo de estilos -->
-    <script defer src="chat.js"></script> <!-- Lógica de interação com o chat -->
+    <title>Plataforma Kognitiva</title>
+    <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
+    <div id="chat">
+        <!-- Header do chat -->
+        <div id="chat-header">
+            <h2>Chat de Suporte</h2>
+            <button onclick="resetarChat()" id="resetButton">Resetar Chat</button>
+        </div>
 
-    <!-- Container principal do chat -->
-    <div id="chat-container">
-
-        <!-- Barra lateral com clientes e histórico -->
+        <!-- Barra lateral com lista de clientes -->
         <div id="sidebar">
             <h3>Clientes</h3>
-            <ul id="client-list">
-                <!-- Lista dinâmica de clientes -->
+            <ul id="cliente-lista">
+                <!-- Lista de clientes será populada dinamicamente -->
             </ul>
         </div>
 
-        <!-- Área principal do chat -->
-        <div id="chat-box">
-            <div id="messages-container">
-                <!-- Mensagens serão exibidas aqui -->
-            </div>
-            <div id="user-input-container">
-                <!-- Campo de entrada e botão de envio -->
-                <input type="text" id="user-input" placeholder="Digite sua mensagem..." autofocus>
-                <button id="send-button">Enviar</button>
+        <!-- Container de mensagens do chat -->
+        <div id="chat-container">
+            <div id="messages">
+                <!-- As mensagens serão inseridas aqui -->
             </div>
         </div>
 
-    </div>
-
-    <!-- Modal para diagnóstico -->
-    <div id="diagnostic-modal" class="modal-overlay">
-        <div class="modal-container">
-            <h3>Diagnóstico Final</h3>
-            <p id="diagnostic-text">Aqui estará o diagnóstico final após a interação.</p>
-            <button id="close-diagnostic">Fechar</button>
+        <!-- Input para enviar mensagens -->
+        <div id="input-container">
+            <input type="text" id="userInput" placeholder="Digite sua mensagem..." onkeydown="verificarEnter(event)" />
+            <button onclick="enviarMensagem()">Enviar</button>
         </div>
-    </div>
 
-    <!-- Modal de feedback -->
-    <div id="feedback-modal" class="modal-overlay">
-        <div class="modal-container">
-            <h3>Feedback</h3>
-            <p>Você acha que a resposta foi útil?</p>
-            <button id="thumbs-up">👍</button>
-            <button id="thumbs-down">👎</button>
-            <button id="close-feedback">Fechar</button>
+        <!-- Diagnóstico de sessão -->
+        <div id="diagnostico" class="diagnostico">
+            <!-- Exibição de diagnóstico com cor e texto -->
         </div>
+
+        <!-- Área de Feedback -->
+        <div id="feedback-container" class="feedback-container">
+            <button onclick="enviarFeedback('positivo')">👍</button>
+            <button onclick="enviarFeedback('negativo')">👎</button>
+            <textarea id="comentario-feedback" placeholder="Deixe um comentário..." style="display:none;"></textarea>
+        </div>
+
+        <!-- Feedback Visual -->
+        <div id="feedback-status" style="display:none; padding:10px; text-align:center; font-weight:bold;"></div>
+
     </div>
 
+    <script src="executarIA.js"></script>
+    <script src="feedbackBox.js"></script>
+    <script src="contextService.js"></script>
+    <script src="diagnosticoFinal.js"></script>
+    <script>
+        // Função para enviar a mensagem do usuário e simular a IA
+        function enviarMensagem() {
+            const mensagem = document.getElementById("userInput").value.trim();
+            if (mensagem) {
+                adicionarMensagem(mensagem, 'usuario');
+                document.getElementById("userInput").value = '';  // Limpar campo de entrada
+
+                // Simular resposta da IA
+                processarMensagem(mensagem);
+            }
+        }
+
+        // Função para simular a digitação da IA
+        function processarMensagem(mensagem) {
+            // Exemplo de envio para IA (seria feito com backend)
+            setTimeout(() => {
+                const resposta = "Resposta da IA para: " + mensagem;
+                adicionarMensagem(resposta, 'ia');
+                mostrarDiagnostico(resposta);  // Exibe diagnóstico com base na resposta
+                coletarFeedback();  // Solicita feedback do usuário
+            }, 2000);  // Simulando um delay de digitação de IA
+        }
+
+        // Função para adicionar a mensagem ao chat
+        function adicionarMensagem(texto, tipo) {
+            const messagesContainer = document.getElementById("messages");
+            const mensagemElement = document.createElement("div");
+            mensagemElement.classList.add(tipo);
+            mensagemElement.textContent = texto;
+            messagesContainer.appendChild(mensagemElement);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;  // Rola para a última mensagem
+        }
+
+        // Função para exibir o diagnóstico final com base na resposta da IA
+        function mostrarDiagnostico(resposta) {
+            const score = calcularScore(resposta);  // Exemplo de cálculo de score
+            const diagnosticoElement = document.getElementById("diagnostico");
+
+            if (score >= 85) {
+                diagnosticoElement.textContent = "✅ Diagnóstico: ÓTIMO";
+                diagnosticoElement.style.backgroundColor = "#4CAF50"; // Verde
+            } else if (score >= 60) {
+                diagnosticoElement.textContent = "🟡 Diagnóstico: REVISAR";
+                diagnosticoElement.style.backgroundColor = "#FFEB3B"; // Amarelo
+            } else {
+                diagnosticoElement.textContent = "🔴 Diagnóstico: FALHA CRÍTICA";
+                diagnosticoElement.style.backgroundColor = "#F44336"; // Vermelho
+            }
+
+            diagnosticoElement.style.display = "block";
+        }
+
+        // Função de cálculo simples do score (pode ser aprimorado com mais lógica)
+        function calcularScore(resposta) {
+            if (resposta.includes("ótimo")) return 90;  // Exemplo: diagnóstico baseado no conteúdo da resposta
+            if (resposta.includes("revisar")) return 70;
+            return 50;
+        }
+
+        // Função para verificar pressionamento da tecla Enter
+        function verificarEnter(event) {
+            if (event.key === "Enter") {
+                enviarMensagem();
+            }
+        }
+
+        // Função para reiniciar o chat
+        function resetarChat() {
+            document.getElementById("messages").innerHTML = '';
+            document.getElementById("diagnostico").style.display = 'none';
+            document.getElementById("feedback-container").style.display = 'none';
+        }
+
+        // Função para coletar feedback do usuário
+        function coletarFeedback() {
+            const feedbackContainer = document.getElementById("feedback-container");
+            feedbackContainer.style.display = 'block'; // Exibe área de feedback
+            const comentarioField = document.getElementById("comentario-feedback");
+
+            // Mostra campo de comentário apenas se o feedback for negativo
+            document.querySelectorAll('#feedback-container button').forEach(button => {
+                button.onclick = () => {
+                    if (button.textContent === '👎') {
+                        comentarioField.style.display = 'block';  // Exibe campo de comentário
+                    } else {
+                        comentarioField.style.display = 'none'; // Esconde campo de comentário
+                    }
+                };
+            });
+        }
+
+        // Função para enviar o feedback
+        function enviarFeedback(tipo) {
+            const comentario = document.getElementById("comentario-feedback").value.trim();
+            console.log(`Feedback: ${tipo}, Comentário: ${comentario}`);
+
+            // Enviar para o backend para registro
+            // EnviarFeedback(tipo, comentario);
+            // Resetar o campo de comentário
+            document.getElementById("comentario-feedback").value = '';
+            document.getElementById("feedback-container").style.display = 'none';  // Esconde área de feedback
+
+            // Exibir feedback visual
+            exibirFeedbackVisual("Feedback enviado com sucesso!", true);
+        }
+
+        // Função para exibir feedback visual
+        function exibirFeedbackVisual(mensagem, sucesso) {
+            const feedbackContainer = document.getElementById("feedback-status");
+            feedbackContainer.textContent = mensagem;
+            feedbackContainer.style.color = sucesso ? 'green' : 'red';
+            feedbackContainer.style.display = 'block';
+            setTimeout(() => feedbackContainer.style.display = 'none', 3000);  // Esconde após 3 segundos
+        }
+    </script>
 </body>
+
 </html>
+
