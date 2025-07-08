@@ -23,7 +23,7 @@ function login(username, password) {
     .then(response => response.json())
     .then(data => {
         if (data.token) {
-            armazenarToken(data.token);  // Armazena o token no localStorage
+            armazenarToken(data.token);  // Armazenando no localStorage
             console.log('Login bem-sucedido!');
             window.location.href = "/chat";  // Redireciona para a página do chat
         } else {
