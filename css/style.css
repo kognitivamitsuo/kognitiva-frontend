@@ -1,0 +1,252 @@
+/* Estilo geral do corpo e do chat */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #343541; /* Fundo escuro */
+    color: #f3f4f6; /* Texto claro */
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* Container principal do chat */
+#chat {
+    width: 100%;
+    max-width: 800px;
+    background-color: #2d2f36; /* Fundo do chat */
+    border-radius: 10px;
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* Header do chat */
+#chat-header {
+    background-color: #4b5563;
+    color: #f3f4f6;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#resetButton {
+    background-color: #ef4444; /* Vermelho para reset */
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    font-size: 14px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#resetButton:hover {
+    background-color: #dc2626;
+}
+
+/* Barra lateral */
+#sidebar {
+    background-color: #1f2937;
+    width: 200px;
+    padding: 15px;
+    color: #f3f4f6;
+    font-size: 14px;
+    border-right: 1px solid #444;
+    height: 100%;
+    display: none; /* Esconde a barra lateral em telas pequenas */
+}
+
+#cliente-lista {
+    list-style: none;
+    padding: 0;
+}
+
+#cliente-lista li {
+    padding: 8px;
+    cursor: pointer;
+}
+
+#cliente-lista li:hover {
+    background-color: #374151;
+    border-radius: 5px;
+}
+
+/* Chat Container */
+#chat-container {
+    flex-grow: 1;
+    padding: 15px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+#messages {
+    margin-bottom: 20px;
+}
+
+.message {
+    max-width: 70%;
+    margin: 5px 0;
+    padding: 10px;
+    border-radius: 15px;
+    word-wrap: break-word;
+}
+
+.usuario {
+    background-color: #3b82f6;
+    align-self: flex-end;
+    color: #fff;
+}
+
+.ia {
+    background-color: #f3f4f6;
+    align-self: flex-start;
+    color: #333;
+}
+
+.sistema {
+    background-color: #facc15;
+    color: #333;
+    font-weight: bold;
+    align-self: center;
+}
+
+/* Input Container */
+#input-container {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px;
+    background-color: #374151;
+}
+
+#userInput {
+    flex-grow: 1;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #444;
+    background-color: #1f2937;
+    color: #f3f4f6;
+    font-size: 14px;
+}
+
+button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 14px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+/* Diagnóstico */
+.diagnostico {
+    background-color: #ffeb3b;
+    color: #333;
+    padding: 10px;
+    font-weight: bold;
+    display: none;
+    text-align: center;
+}
+
+/* Feedback Container */
+.feedback-container {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    padding: 15px;
+    background-color: #1f2937;
+    display: none; /* Inicialmente escondido */
+}
+
+textarea {
+    width: 100%;
+    height: 60px;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #444;
+    background-color: #1f2937;
+    color: #f3f4f6;
+    margin-top: 5px;
+    font-size: 14px;
+}
+
+/* Feedback Status Visual */
+#feedback-status {
+    padding: 10px;
+    text-align: center;
+    font-weight: bold;
+    display: none;
+}
+
+/* Responsividade (mobile-first) */
+@media (max-width: 768px) {
+    #sidebar {
+        display: none; /* Esconde a barra lateral em telas pequenas */
+    }
+
+    #chat {
+        width: 100%;
+        max-width: 100%;
+        border-radius: 0;
+    }
+
+    #chat-header {
+        padding: 10px;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    #messages {
+        margin-bottom: 10px;
+    }
+
+    #userInput {
+        font-size: 16px;
+    }
+
+    button {
+        font-size: 16px;
+        padding: 10px 15px;
+    }
+}
+
+/* Mensagens importantes */
+#lgpd-warning {
+    background-color: #f44336;
+    color: white;
+    padding: 10px;
+    position: fixed;
+    bottom: 10px;
+    width: 100%;
+    text-align: center;
+    display: none;
+}
+
+#lgpd-warning.active {
+    display: block;
+}
+
+/* Avatares */
+.avatar-usuario,
+.avatar-ia {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+#feedback-status {
+    padding: 10px;
+    text-align: center;
+    font-weight: bold;
+    display: none;
+}
+
