@@ -1,7 +1,11 @@
 // Função para armazenar o token JWT no localStorage
 function armazenarToken(token) {
-    localStorage.setItem('jwt_token', token);  // Armazenar no localStorage
-    console.log('Token armazenado no localStorage com sucesso');
+    if (token) {
+        localStorage.setItem('jwt_token', token);  // Armazenar no localStorage
+        console.log('Token armazenado no localStorage com sucesso');
+    } else {
+        console.error('Erro: O token não pode ser armazenado, pois é inválido.');
+    }
 }
 
 // Função para recuperar o token JWT do localStorage
@@ -20,7 +24,12 @@ function login(username, password) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password })
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Falha no login: Erro ao autenticar');
+        }
+        return response.json();
+    })
     .then(data => {
         if (data.token) {
             armazenarToken(data.token);  // Armazenando no localStorage
@@ -28,19 +37,18 @@ function login(username, password) {
             window.location.href = "/chat";  // Redireciona para a página do chat
         } else {
             console.error('Falha no login: Token não recebido');
-            alert('Falha no login');
+            alert('Falha no login: Token não recebido');
         }
     })
     .catch(error => {
         console.error('Erro ao fazer login:', error);
-        alert('Erro ao tentar fazer login');
+        alert('Erro ao tentar fazer login. Tente novamente.');
     });
 }
 
 // Função para fazer uma requisição autenticada
 function fazerRequisicaoAutenticada(url, metodo = 'GET', dados = {}) {
     const token = recuperarToken();
-
     if (!token) {
         console.error('Token não encontrado. Usuário não autenticado.');
         return;
@@ -49,15 +57,14 @@ function fazerRequisicaoAutenticada(url, metodo = 'GET', dados = {}) {
     fetch(url, {
         method: metodo,
         headers: {
-            'Authorization': `Bearer ${token}`,
+            'Authorization': `Bearer ${token}`,  // Envia o token no cabeçalho
             'Content-Type': 'application/json'
         },
         body: metodo === 'POST' ? JSON.stringify(dados) : undefined
     })
     .then(response => {
         if (!response.ok) {
-            console.error('Erro na requisição:', response.statusText);
-            throw new Error('Erro na requisição');
+            throw new Error('Erro na requisição: ' + response.statusText);
         }
         return response.json();
     })
@@ -105,5 +112,14 @@ function logout() {
     localStorage.removeItem('jwt_token');  // Remove o token do localStorage
     console.log('Usuário desconectado');
     window.location.href = "/login";  // Redireciona para a página de login
+}
+
+// Função adicional para verificar a sessão (quando o usuário já está logado)
+function verificarSessao() {
+    const token = recuperarToken();
+    if (!token) {
+        console.log('Usuário não está logado.');
+        window.location.href = "/login";  // Redireciona para a página de login se o token não existir
+    }
 }
 
