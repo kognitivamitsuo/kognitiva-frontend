@@ -1,7 +1,7 @@
 // Função para armazenar o token JWT no localStorage
 function armazenarToken(token) {
     localStorage.setItem('jwt_token', token);  // Armazenar no localStorage
-    console.log('Token armazenado no localStorage');
+    console.log('Token armazenado no localStorage com sucesso');
 }
 
 // Função para recuperar o token JWT do localStorage
@@ -61,12 +61,16 @@ function fazerRequisicaoAutenticada(url, metodo = 'GET', dados = {}) {
         }
         return response.json();
     })
-    .then(data => console.log(data))
-    .catch(error => console.error('Erro ao fazer requisição autenticada:', error));
+    .then(data => {
+        console.log('Dados recebidos:', data);
+    })
+    .catch(error => {
+        console.error('Erro ao fazer requisição autenticada:', error);
+    });
 }
 
 // Função para verificar se o token JWT é válido
-function verificarToken() {
+async function verificarToken() {
     const token = recuperarToken();
 
     if (!token) {
@@ -74,14 +78,15 @@ function verificarToken() {
         return false;
     }
 
-    return fetch('/verify-token', {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-        }
-    })
-    .then(response => {
+    try {
+        const response = await fetch('/verify-token', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
         if (response.ok) {
             console.log('Token válido!');
             return true;
@@ -89,11 +94,10 @@ function verificarToken() {
             console.log('Token inválido!');
             return false;
         }
-    })
-    .catch(error => {
+    } catch (error) {
         console.error('Erro ao verificar o token:', error);
         return false;  // Caso haja erro na requisição
-    });
+    }
 }
 
 // Função para fazer logout (remover o token)
@@ -102,3 +106,4 @@ function logout() {
     console.log('Usuário desconectado');
     window.location.href = "/login";  // Redireciona para a página de login
 }
+
