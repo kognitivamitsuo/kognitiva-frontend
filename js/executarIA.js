@@ -28,6 +28,8 @@ async function enviarIA(mensagem) {
     } catch (error) {
         // Caso ocorra erro na requisição
         console.error('Erro ao enviar mensagem para a IA:', error);
+        // Exibir uma mensagem de erro amigável ao usuário
+        mostrarResposta("Ocorreu um erro ao processar sua solicitação. Tente novamente mais tarde.");
     }
 }
 
@@ -47,6 +49,7 @@ function mostrarResposta(resposta) {
 
     // Cria um novo elemento de mensagem e insere a resposta
     const mensagemResposta = document.createElement("div");
+    mensagemResposta.classList.add("ia");  // Adiciona uma classe para estilizar a resposta da IA
     mensagemResposta.textContent = resposta;
 
     // Adiciona a mensagem no contêiner de mensagens
@@ -54,4 +57,14 @@ function mostrarResposta(resposta) {
 
     // Rola a tela para a última mensagem
     mensagens.scrollTop = mensagens.scrollHeight;
+}
+
+// Função para recuperar o token JWT do localStorage
+function recuperarToken() {
+    const token = localStorage.getItem('jwt_token');
+    if (!token) {
+        console.error('Token não encontrado no localStorage');
+        // Considerar uma forma de notificar o usuário que o login expirou ou que é necessário fazer login novamente
+    }
+    return token;
 }
