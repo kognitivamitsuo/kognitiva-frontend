@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kognitiva - Chat IA</title>
+    <link rel="stylesheet" href="style.css"> <!-- Referência ao arquivo de estilos -->
+    <script defer src="chat.js"></script> <!-- Lógica de interação com o chat -->
+</head>
+<body>
+
+    <!-- Container principal do chat -->
+    <div id="chat-container">
+
+        <!-- Barra lateral com clientes e histórico -->
+        <div id="sidebar">
+            <h3>Clientes</h3>
+            <ul id="client-list">
+                <!-- Lista dinâmica de clientes -->
+            </ul>
+        </div>
+
+        <!-- Área principal do chat -->
+        <div id="chat-box">
+            <div id="messages-container">
+                <!-- Mensagens serão exibidas aqui -->
+            </div>
+            <div id="user-input-container">
+                <!-- Campo de entrada e botão de envio -->
+                <input type="text" id="user-input" placeholder="Digite sua mensagem..." autofocus>
+                <button id="send-button">Enviar</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Modal para diagnóstico -->
+    <div id="diagnostic-modal" class="modal-overlay">
+        <div class="modal-container">
+            <h3>Diagnóstico Final</h3>
+            <p id="diagnostic-text">Aqui estará o diagnóstico final após a interação.</p>
+            <button id="close-diagnostic">Fechar</button>
+        </div>
+    </div>
+
+    <!-- Modal de feedback -->
+    <div id="feedback-modal" class="modal-overlay">
+        <div class="modal-container">
+            <h3>Feedback</h3>
+            <p>Você acha que a resposta foi útil?</p>
+            <button id="thumbs-up">👍</button>
+            <button id="thumbs-down">👎</button>
+            <button id="close-feedback">Fechar</button>
+        </div>
+    </div>
+
+</body>
+</html>
