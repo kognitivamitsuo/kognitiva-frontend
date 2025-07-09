@@ -51,7 +51,6 @@
 
         <!-- Feedback Visual -->
         <div id="feedback-status" style="display:none; padding:10px; text-align:center; font-weight:bold;"></div>
-
     </div>
 
     <script src="executarIA.js"></script>
@@ -59,6 +58,24 @@
     <script src="contextService.js"></script>
     <script src="diagnosticoFinal.js"></script>
     <script>
+        // Função para exibir a mensagem inicial do chat
+        function renderMensagemInicial() {
+            const mensagemInicial = "Olá! Como posso ajudar você hoje?";
+            const chatBox = document.getElementById("chatBox"); // Elemento do chat onde as mensagens são exibidas
+            const messageElement = document.createElement("div");
+            messageElement.classList.add("message", "system"); // Classe para estilizar a mensagem inicial
+            messageElement.innerHTML = mensagemInicial;
+            
+            chatBox.appendChild(messageElement); // Adiciona a mensagem ao chat
+            chatBox.scrollTop = chatBox.scrollHeight; // Rolagem automática para o fim do chat
+        }
+
+        // Verifica se é a primeira vez que o chat foi carregado
+        if (!localStorage.getItem("chatIniciado")) {
+            renderMensagemInicial();
+            localStorage.setItem("chatIniciado", "true"); // Marca que o chat foi iniciado
+        }
+
         // Função para enviar a mensagem do usuário e simular a IA
         function enviarMensagem() {
             const mensagem = document.getElementById("userInput").value.trim();
@@ -177,3 +194,4 @@
 </body>
 
 </html>
+
