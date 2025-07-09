@@ -8,6 +8,8 @@ async function enviarIA(mensagem) {
     // Verifica se o token não foi encontrado
     if (!token) {
         console.error('Token não encontrado, usuário não autenticado');
+        // Exibe mensagem amigável ou redireciona para a página de login
+        mostrarResposta("Você precisa estar autenticado para enviar mensagens. Por favor, faça login.");
         return;
     }
 
@@ -33,17 +35,21 @@ async function enviarIA(mensagem) {
     }
 }
 
-// Função para obter o contexto da sessão do usuário (deve ser ajustada conforme a implementação do seu contexto)
+// Função para obter o contexto da sessão do usuário
+// Essa função agora pode ser ajustada conforme a lógica de seu sistema de contexto
 function obterContexto() {
     // Exemplo de um contexto fixo, pode ser modificado para pegar o contexto de uma sessão ativa ou de um armazenamento
-    return {
+    const contexto = {
         cliente_nome: 'Cliente X',
         produto_interesse: 'Produto Y',
         etapa_funil: 'qualificação'
     };
+
+    // Podemos adicionar dados adicionais aqui, como histórico de conversas ou preferências
+    return contexto;
 }
 
-// Função para exibir a resposta da IA no chat (adapte a exibição conforme sua implementação)
+// Função para exibir a resposta da IA no chat
 function mostrarResposta(resposta) {
     const mensagens = document.getElementById("messages");
 
@@ -68,3 +74,4 @@ function recuperarToken() {
     }
     return token;
 }
+
