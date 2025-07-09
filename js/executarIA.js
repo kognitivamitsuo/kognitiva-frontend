@@ -36,7 +36,6 @@ async function enviarIA(mensagem) {
 }
 
 // Função para obter o contexto da sessão do usuário
-// Essa função agora pode ser ajustada conforme a lógica de seu sistema de contexto
 function obterContexto() {
     // Exemplo de um contexto fixo, pode ser modificado para pegar o contexto de uma sessão ativa ou de um armazenamento
     const contexto = {
@@ -44,8 +43,6 @@ function obterContexto() {
         produto_interesse: 'Produto Y',
         etapa_funil: 'qualificação'
     };
-
-    // Podemos adicionar dados adicionais aqui, como histórico de conversas ou preferências
     return contexto;
 }
 
@@ -70,8 +67,8 @@ function recuperarToken() {
     const token = localStorage.getItem('jwt_token');
     if (!token) {
         console.error('Token não encontrado no localStorage');
-        // Considerar uma forma de notificar o usuário que o login expirou ou que é necessário fazer login novamente
     }
     return token;
 }
+
 
