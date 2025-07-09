@@ -243,10 +243,12 @@ textarea {
     margin-right: 10px;
 }
 
+/* Feedback Status */
 #feedback-status {
     padding: 10px;
     text-align: center;
     font-weight: bold;
     display: none;
 }
+
 
