@@ -1,20 +1,32 @@
-// Função para armazenar o token JWT no localStorage
+// Função para criptografar o token antes de armazená-lo (opcional para maior segurança)
+function criptografar(dado) {
+    return btoa(dado);  // Exemplo simples de criptografia (Base64), use criptografia real para produção
+}
+
+// Função para descriptografar o token ao recuperá-lo
+function descriptografar(dado) {
+    return atob(dado);  // Exemplo simples de descriptografia (Base64)
+}
+
+// Função para armazenar o token JWT no localStorage (com criptografia opcional)
 function armazenarToken(token) {
     if (token) {
-        localStorage.setItem('jwt_token', token);  // Armazenar no localStorage
+        const encryptedToken = criptografar(token);  // Criptografa o token
+        localStorage.setItem('jwt_token', encryptedToken);  // Armazenar no localStorage
         console.log('Token armazenado no localStorage com sucesso');
     } else {
         console.error('Erro: O token não pode ser armazenado, pois é inválido.');
     }
 }
 
-// Função para recuperar o token JWT do localStorage
+// Função para recuperar o token JWT do localStorage (com descriptografia)
 function recuperarToken() {
-    const token = localStorage.getItem('jwt_token');
-    if (!token) {
+    const encryptedToken = localStorage.getItem('jwt_token');
+    if (!encryptedToken) {
         console.error('Token não encontrado no localStorage');
+        return null;
     }
-    return token;
+    return descriptografar(encryptedToken);  // Descriptografa o token
 }
 
 // Função para fazer login (exemplo simples)
@@ -123,3 +135,19 @@ function verificarSessao() {
     }
 }
 
+// Função para verificar se o token JWT ainda é válido antes de permitir interações no chat
+function verificarSessaoAtiva() {
+    const token = recuperarToken();
+    if (!token) {
+        console.log('Sessão expirada ou token não encontrado. Redirecionando para login...');
+        window.location.href = "/login";  // Redireciona para login se o token não estiver presente
+    } else {
+        // Verifica se o token ainda é válido no backend
+        verificarToken().then(isValid => {
+            if (!isValid) {
+                console.log('Token inválido, redirecionando para login...');
+                window.location.href = "/login";  // Redireciona para login caso o token seja inválido
+            }
+        });
+    }
+}
