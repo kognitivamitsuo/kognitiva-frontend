@@ -1,71 +1,80 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plataforma Kognitiva</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Plataforma Kognitiva</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <div id="chat">
-        <div id="chat-header">
-            <h2>Chat de Suporte</h2>
-            <button id="resetButton">Resetar Chat</button>
-        </div>
-        <div id="chat-container">
-            <div id="messages"></div>
-        </div>
-        <div id="input-container">
-            <input type="text" id="userInput" placeholder="Digite sua mensagem...">
-            <button id="sendButton">Enviar</button>
-        </div>
-        <div id="diagnostico" class="diagnostico"></div>
-        <div id="feedback-container" class="feedback-container">
-            <button id="feedback-positivo">👍</button>
-            <button id="feedback-negativo">👎</button>
-            <textarea id="comentario-feedback" placeholder="Deixe um comentário..."></textarea>
-        </div>
-        <div id="feedback-status"></div>
+  <div id="chat">
+    <div id="chat-header">
+      <h2>Chat de Suporte</h2>
+      <button id="resetButton">Resetar Chat</button>
     </div>
 
-    <!-- Scripts na ordem correta -->
-    <script src="js/ui.js"></script>
-    <script src="js/auth.js"></script>
-    <script src="js/executarIA.js"></script>
-    <script src="js/feedback.js"></script>
-    <script src="js/diagnostico.js"></script>
-    
-    <script>
-        // Inicialização do chat
-        document.addEventListener('DOMContentLoaded', () => {
-            initChat();
+    <div id="chat-container">
+      <div id="messages"></div>
+    </div>
 
-            // Event listeners
-            document.getElementById('sendButton').addEventListener('click', enviarMensagem);
-            document.getElementById('userInput').addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') enviarMensagem();
-            });
-            document.getElementById('resetButton').addEventListener('click', resetarChat);
-        });
+    <div id="input-container">
+      <input type="text" id="userInput" placeholder="Digite sua mensagem..." />
+      <button id="sendButton">Enviar</button>
+    </div>
 
-        function enviarMensagem() {
-            const input = document.getElementById('userInput');
-            const message = input.value.trim();
-            if (message) {
-                adicionarMensagem(message, 'usuario');
-                input.value = '';
-                enviarIA(message);
-            }
-        }
+    <div id="diagnostico" class="diagnostico"></div>
 
-        function resetarChat() {
-            if (confirm('Tem certeza que deseja resetar o chat?')) {
-                localStorage.removeItem('chatIniciado');
-                document.getElementById('messages').innerHTML = '';
-                renderMensagemInicial();
-            }
-        }
-    </script>
+    <div id="feedback-container" class="feedback-container">
+      <button id="feedback-positivo">👍</button>
+      <button id="feedback-negativo">👎</button>
+      <textarea id="comentario-feedback" placeholder="Deixe um comentário..."></textarea>
+    </div>
+
+    <div id="feedback-status"></div>
+  </div>
+
+  <!-- Scripts em ordem -->
+  <script src="js/ui.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/executarIA.js"></script>
+  <script src="js/feedback.js"></script>
+  <script src="js/diagnostico.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      verificarSessaoAtiva();  // ✅ substituto correto para verificarTokenJWT()
+      initChat();
+
+      document.getElementById('sendButton').addEventListener('click', enviarMensagem);
+      document.getElementById('userInput').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') enviarMensagem();
+      });
+
+      document.getElementById('resetButton').addEventListener('click', resetarChat);
+    });
+
+    function enviarMensagem() {
+      const input = document.getElementById('userInput');
+      const message = input.value.trim();
+      if (message) {
+        adicionarMensagem(message, 'usuario');
+        input.value = '';
+        enviarIA(message);
+      }
+    }
+
+    function resetarChat() {
+      if (confirm('Tem certeza que deseja resetar o chat?')) {
+        localStorage.removeItem('chatIniciado');
+        localStorage.removeItem('jwt_token');
+        document.getElementById('messages').innerHTML = '';
+        document.getElementById('feedback-container').style.display = 'none';
+        document.getElementById('comentario-feedback').style.display = 'none';
+        renderMensagemInicial();
+
+        adicionarMensagem("🔄 Sessão reiniciada com sucesso. Por favor, envie uma nova mensagem para começar.", 'system');
+      }
+    }
+  </script>
 </body>
 </html>
-
