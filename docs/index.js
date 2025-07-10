@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Plataforma Kognitiva</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="lgpd-msg" class="aviso-lgpd">Usamos seus dados apenas para melhorar as respostas da IA. Nenhuma informação pessoal é armazenada sem sua permissão.</div>
+
+  <div id="chat-container"></div>
+  <div id="input-container">
+    <input type="text" id="userInput" placeholder="Digite sua mensagem..." />
+    <button id="sendButton">Enviar</button>
+  </div>
+  <div id="spinner" class="spinner" style="display:none;">⏳ Processando...</div>
+  <div id="diagnostico" class="diagnostico"></div>
+  <div id="feedback-container" style="display:none;">
+    <button onclick="registrarFeedback('positivo')">👍</button>
+    <button onclick="registrarFeedback('negativo')">👎</button>
+    <textarea id="comentario" placeholder="Deixe um comentário..."></textarea>
+    <button onclick="enviarComentario()">Enviar Feedback</button>
+  </div>
+
+  <script src="js/auth.js"></script>
+  <script src="js/contextService.js"></script>
+  <script src="js/executarIA.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/feedback.js"></script>
+  <script src="js/diagnostico.js"></script>
+</body>
+</html>
