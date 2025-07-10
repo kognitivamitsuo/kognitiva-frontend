@@ -1,56 +1,48 @@
-// Função mock para login (substitua pela API do Wix real)
-const wixAuth = {
-  login: async () => {
-    // Simula login e retorno de token JWT
-    return 'eyJhbGciOiJIUzI1NiIsInR...'; // token mock
-  }
-};
-
-// Função para realizar login via Wix e armazenar o token JWT
-async function loginWix() {
-  try {
-    const token = await wixAuth.login(); // Wix login
-    localStorage.setItem('jwt_token', token);
-    console.log("✅ Usuário autenticado com sucesso.");
-    return token;
-  } catch (error) {
-    console.error('Erro no login com Wix:', error);
-    alert('❌ Falha no login. Tente novamente.');
-  }
-}
-
-// Verifica se há token JWT no localStorage e redireciona para login se não existir
-function verificarTokenJWT() {
-  const token = localStorage.getItem('jwt_token');
-  if (!token) {
-    const messagesContainer = document.getElementById('messages');
-    if (messagesContainer) {
-      const msg = document.createElement('div');
-      msg.classList.add('message', 'system', 'erro');
-      msg.textContent = "🔒 Você precisa estar autenticado para acessar o chat.";
-      messagesContainer.appendChild(msg);
+// Renderiza a mensagem inicial do sistema
+function renderMensagemInicial() {
+    try {
+        const messagesContainer = document.getElementById('messages');
+        if (messagesContainer) {
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message', 'system');
+            messageElement.textContent = "Olá! Como posso ajudar você hoje?";
+            messagesContainer.appendChild(messageElement);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        } else {
+            console.error("Elemento 'messages' não encontrado!");
+        }
+    } catch (error) {
+        console.error("Erro ao renderizar mensagem inicial:", error);
     }
-    window.location.href = '/login';
-    return false;
-  }
-  console.log('🛡 Token JWT encontrado.');
-  return true;
 }
 
-// Função auxiliar utilizada nos demais scripts
-function verificarAutenticacao() {
-  return verificarTokenJWT();
+// Adiciona uma nova mensagem ao chat
+function adicionarMensagem(texto, tipo) {
+    try {
+        const messagesContainer = document.getElementById('messages');
+        if (messagesContainer) {
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message', tipo);
+            messageElement.textContent = texto;
+            messagesContainer.appendChild(messageElement);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        } else {
+            console.error("Elemento 'messages' não encontrado para adicionar mensagem!");
+        }
+    } catch (error) {
+        console.error("Erro ao adicionar mensagem:", error);
+    }
 }
 
-// Armazenamento temporário no sessionStorage
-function salvarDadosTemporarios(dados) {
-  sessionStorage.setItem('dados_temp', JSON.stringify(dados));
-  console.log('🧠 Dados temporários salvos no sessionStorage.');
-}
-
-// Recuperação dos dados temporários
-function recuperarDadosTemporarios() {
-  const dados = sessionStorage.getItem('dados_temp');
-  return dados ? JSON.parse(dados) : null;
+// Inicializa o chat, evitando múltiplas execuções da mensagem inicial
+function initChat() {
+    try {
+        if (!localStorage.getItem('chatIniciado')) {
+            renderMensagemInicial();
+            localStorage.setItem('chatIniciado', 'true');
+        }
+    } catch (error) {
+        console.error("Erro ao inicializar o chat:", error);
+    }
 }
 
