@@ -1,7 +1,19 @@
-function salvarContextoNoLocalStorage(contexto) {
-    localStorage.setItem('contexto_conversa', JSON.stringify(contexto));
+// contextService.js
+
+const CONTEXTO_KEY = "contexto_kognitiva";
+
+function salvarContexto(contexto) {
+  localStorage.setItem(CONTEXTO_KEY, JSON.stringify(contexto));
+  console.log("🧠 Contexto salvo.");
 }
-function recuperarContextoDoLocalStorage() {
-    const contexto = localStorage.getItem('contexto_conversa');
-    return contexto ? JSON.parse(contexto) : null;
+
+function obterContexto() {
+  const raw = localStorage.getItem(CONTEXTO_KEY);
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw);
+  } catch (e) {
+    console.warn("⚠️ Falha ao recuperar contexto.");
+    return null;
+  }
 }
