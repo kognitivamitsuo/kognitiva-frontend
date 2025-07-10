@@ -5,6 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Plataforma Kognitiva</title>
   <link rel="stylesheet" href="./style.css" />
+
+  <script>
+    // ✅ Definição global do backend da IA
+    // Altere aqui para o ambiente desejado (produção, staging, local)
+    window.BACKEND_URL = "https://sync.kognitiva.app/operacional";
+  </script>
 </head>
 <body>
   <div id="lgpd-msg" class="aviso-lgpd">
@@ -12,10 +18,12 @@
   </div>
 
   <div id="chat-container"></div>
+
   <div id="input-container">
     <input type="text" id="userInput" placeholder="Digite sua mensagem..." />
     <button id="sendButton">Enviar</button>
   </div>
+
   <div id="spinner" class="spinner" style="display:none;">⏳ Processando...</div>
   <div id="diagnostico" class="diagnostico"></div>
 
