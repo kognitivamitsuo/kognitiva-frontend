@@ -4,6 +4,13 @@
 
 async function enviarMensagemAPI(mensagem) {
   const token = localStorage.getItem("jwt_token");
+  const entrada = mensagem?.trim();
+
+  if (!entrada) {
+    alert("Digite uma mensagem válida.");
+    return;
+  }
+
   document.getElementById("spinner").style.display = "block";
 
   try {
@@ -13,7 +20,7 @@ async function enviarMensagemAPI(mensagem) {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${token}`
       },
-      body: JSON.stringify({ mensagem })
+      body: JSON.stringify({ mensagem: entrada })
     });
 
     const data = await response.json();
