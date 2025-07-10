@@ -1,13 +1,13 @@
 // executarIA.js
 
-const BACKEND_URL = "https://sync.kognitiva.app";
+// ✅ BACKEND_URL agora referenciado como window.BACKEND_URL
 
 async function enviarMensagemAPI(mensagem) {
   const token = localStorage.getItem("jwt_token");
   document.getElementById("spinner").style.display = "block";
 
   try {
-    const response = await fetch(`${BACKEND_URL}/proxy/execucao`, {
+    const response = await fetch(`${window.BACKEND_URL}/proxy/execucao`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -18,6 +18,7 @@ async function enviarMensagemAPI(mensagem) {
 
     const data = await response.json();
     exibirRespostaIA(data.respostaIA || data.resposta);
+
     if (data.score_resposta) {
       exibirDiagnostico(data.score_resposta);
     }
