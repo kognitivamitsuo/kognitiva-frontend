@@ -1,6 +1,7 @@
 // auth.js
 
-const BACKEND_URL = "https://sync.kognitiva.app";
+// ✅ Corrigido: BACKEND_URL agora definido globalmente via window.BACKEND_URL
+// Utilize window.BACKEND_URL em todo o código
 
 // Verifica se há um token JWT válido no localStorage
 function verificarTokenJWT() {
@@ -16,7 +17,7 @@ function verificarTokenJWT() {
 // Tenta obter o token do backend (via /proxy/token)
 async function obterTokenDoBackend() {
   try {
-    const response = await fetch(`${BACKEND_URL}/proxy/token`);
+    const response = await fetch(`${window.BACKEND_URL}/proxy/token`);
     const data = await response.json();
 
     if (data && data.token) {
@@ -33,3 +34,4 @@ async function obterTokenDoBackend() {
     return false;
   }
 }
+
