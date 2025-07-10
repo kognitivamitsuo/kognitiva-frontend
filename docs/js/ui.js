@@ -1,27 +1,40 @@
+// ui.js
+
 function exibirRespostaIA(resposta) {
-    const chatContainer = document.getElementById('chat-container');
-    const mensagem = document.createElement('div');
-    mensagem.classList.add('ia-resposta');
-    mensagem.textContent = resposta;
-    chatContainer.appendChild(mensagem);
+  const container = document.getElementById("chat-container");
+  if (!container) return;
+
+  const div = document.createElement("div");
+  div.className = "mensagem-ia";
+  div.innerText = resposta;
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
 }
-function renderMensagemInicial() {
-    exibirRespostaIA("Olá! Estou pronta para te ajudar. Me diga o que você precisa.");
+
+function exibirMensagemUsuario(texto) {
+  const container = document.getElementById("chat-container");
+  if (!container) return;
+
+  const div = document.createElement("div");
+  div.className = "mensagem-usuario";
+  div.innerText = texto;
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
 }
-function inicializarChat() {
-    if (verificarTokenJWT()) {
-        renderMensagemInicial();
-    }
-    const btn = document.getElementById('sendButton');
-    if (btn) {
-        btn.addEventListener('click', async () => {
-            const input = document.getElementById('userInput');
-            const mensagem = input.value.trim();
-            if (mensagem) {
-                await enviarMensagemAPI(mensagem);
-                input.value = '';
-            }
-        });
-    }
-}
-document.addEventListener('DOMContentLoaded', inicializarChat);
+
+document.getElementById("sendButton").addEventListener("click", async () => {
+  const input = document.getElementById("userInput");
+  const mensagem = input.value.trim();
+  if (!mensagem) return;
+
+  exibirMensagemUsuario(mensagem);
+  input.value = "";
+  await enviarMensagemAPI(mensagem);
+});
+
+document.getElementById("userInput").addEventListener("keypress", async (e) => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    document.getElementById("sendButton").click();
+  }
+});
