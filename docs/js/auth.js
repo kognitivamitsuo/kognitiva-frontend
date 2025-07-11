@@ -1,37 +1,28 @@
-// auth.js
-
-// ✅ Corrigido: BACKEND_URL agora definido globalmente via window.BACKEND_URL
-// Utilize window.BACKEND_URL em todo o código
-
-// Verifica se há um token JWT válido no localStorage
-function verificarTokenJWT() {
-  const token = localStorage.getItem("jwt_token");
-  if (!token) {
-    console.warn("⚠️ Token JWT não encontrado. Tentando obter do backend...");
-    return obterTokenDoBackend(); // Tenta obter automaticamente
-  }
-  console.log("✅ Token JWT encontrado e válido.");
-  return true;
-}
-
-// Tenta obter o token do backend (via /proxy/token)
-async function obterTokenDoBackend() {
+// ✅ Token agora em HttpOnly Cookie (seguro contra XSS)
+async function verificarTokenJWT() {
   try {
-    const response = await fetch(`${window.BACKEND_URL}/proxy/token`);
-    const data = await response.json();
-
-    if (data && data.token) {
-      localStorage.setItem("jwt_token", data.token);
-      console.log("✅ Token JWT obtido e salvo.");
-      return true;
-    } else {
-      alert("⚠️ Token não recebido. Acesse via ambiente com login.");
-      return false;
+    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/proxy/token`, {
+      credentials: 'include' // Para cookies HttpOnly
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Falha na autenticação");
     }
+    
+    const data = await response.json();
+    return !!data.token; // true se válido
   } catch (error) {
-    console.error("Erro ao obter token:", error);
-    alert("❌ Erro ao tentar autenticar com o servidor.");
+    console.error("Erro na autenticação:", error.message);
     return false;
   }
+}
+
+// Exemplo de logout (remove cookie com `Secure` e `SameSite` configurados)
+function logout() {
+  document.cookie = "jwt_token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT; Secure; SameSite=Strict";
+  // Se os tokens forem armazenados em outro lugar, também os remova
+  localStorage.removeItem('jwt_token');
+  sessionStorage.removeItem('jwt_token');
 }
 
